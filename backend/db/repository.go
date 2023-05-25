@@ -11,6 +11,7 @@ type UserRepository interface {
 	AddUser(ctx context.Context, user domain.User) (int64, error)
 	GetUser(ctx context.Context, id int64) (domain.User, error)
 	UpdateBalance(ctx context.Context, id int64, balance int64) error
+	GetMaxUserID(ctx context.Context) (int64, error)
 }
 
 type UserDBRepository struct {
@@ -45,6 +46,13 @@ func (r *UserDBRepository) UpdateBalance(ctx context.Context, id int64, balance 
 		return err
 	}
 	return nil
+}
+
+func (r *UserDBRepository) GetMaxUserID(ctx context.Context) (int64, error) {
+	row := r.QueryRowContext(ctx, "SELECT MAX(id) FROM users")
+
+	var id int64
+	return id, row.Scan(&id)
 }
 
 type ItemRepository interface {

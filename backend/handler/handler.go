@@ -166,6 +166,17 @@ func (h *Handler) Login(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
+	//get the maximum value of the existing UserIDs
+	max_id,err:=h.UserRepo.GetMaxUserID(ctx)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError,err)
+	}
+
+	//validation (whether userid is existing)
+	if req.UserID<1||req.UserID>max_id{
+		return echo.NewHTTPError(http.StatusBadRequest,"UserID is invalid")
+	}
+
 	//validation (whether password is empty)
 	if req.Password == ""{
 		return echo.NewHTTPError(http.StatusBadRequest,"Password cannot be empty")
