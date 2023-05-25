@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/labstack/echo/v4"
 	"github.com/Airi-hub/mecari-build-hackathon-2023/backend/db"
 	"github.com/Airi-hub/mecari-build-hackathon-2023/backend/domain"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -86,6 +86,14 @@ type addItemResponse struct {
 	ID int64 `json:"id"`
 }
 
+type addCategoryRequest struct {
+	Name string `form:"name"`
+}
+
+type addCategoryResponse struct {
+	ID int64 `json:"id"`
+}
+
 type addBalanceRequest struct {
 	Balance int64 `json:"balance"`
 }
@@ -144,6 +152,16 @@ func (h *Handler) Register(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
+	//validation(whether name is empty)
+	if req.Name == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Name cannot be empty")
+	}
+
+	//validation(whether password is empty)
+	if req.Password == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Password cannot be empty")
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -166,9 +184,20 @@ func (h *Handler) Login(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
+	//get the maximum value of the existing UserIDs
+	max_id, err := h.UserRepo.GetMaxUserID(ctx)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	//validation (whether userid is existing)
+	if req.UserID < 1 || req.UserID > max_id {
+		return echo.NewHTTPError(http.StatusBadRequest, "UserID is invalid")
+	}
+
 	//validation (whether password is empty)
-	if req.Password == ""{
-		return echo.NewHTTPError(http.StatusBadRequest,"Password cannot be empty")
+	if req.Password == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Password cannot be empty")
 	}
 
 	user, err := h.UserRepo.GetUser(ctx, req.UserID)
@@ -260,6 +289,26 @@ func (h *Handler) AddItem(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, addItemResponse{ID: int64(item.ID)})
+}
+
+func (h *Handler) AddCategory(c echo.Context) error {
+
+	req := new(addCategoryRequest)
+
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	if req.Name == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Category cannot be empty")
+	}
+
+	category, err := h.ItemRepo.AddCategory(c.Request().Context(), domain.Category{Name: req.Name})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, addCategoryResponse{ID: int64(category.ID)})
 }
 
 func (h *Handler) Sell(c echo.Context) error {
