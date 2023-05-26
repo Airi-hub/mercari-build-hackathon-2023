@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"unicode/utf8"
 
 	"github.com/Airi-hub/mecari-build-hackathon-2023/backend/db"
 	"github.com/Airi-hub/mecari-build-hackathon-2023/backend/domain"
@@ -145,7 +146,7 @@ func (h *Handler) AccessLog(c echo.Context) error {
 }
 
 func (h *Handler) Register(c echo.Context) error {
-	// TODO: validation
+	// TODO: validation <- checked by Kurotaka
 	// http.StatusBadRequest(400)
 	req := new(registerRequest)
 	if err := c.Bind(req); err != nil {
@@ -177,7 +178,7 @@ func (h *Handler) Register(c echo.Context) error {
 
 func (h *Handler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
-	// TODO: validation
+	// TODO: validation <- checked by Kurotaka
 	// http.StatusBadRequest(400)
 	req := new(loginRequest)
 	if err := c.Bind(req); err != nil {
@@ -185,14 +186,14 @@ func (h *Handler) Login(c echo.Context) error {
 	}
 
 	//get the maximum value of the existing UserIDs
-	max_id,err:=h.UserRepo.GetMaxUserID(ctx)
+	max_id, err := h.UserRepo.GetMaxUserID(ctx)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError,err)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	//validation (whether userid is existing)
-	if req.UserID<1||req.UserID>max_id{
-		return echo.NewHTTPError(http.StatusBadRequest,"UserID is invalid")
+	if req.UserID < 1 || req.UserID > max_id {
+		return echo.NewHTTPError(http.StatusBadRequest, "UserID is invalid")
 
 	}
 
@@ -236,13 +237,23 @@ func (h *Handler) Login(c echo.Context) error {
 }
 
 func (h *Handler) AddItem(c echo.Context) error {
-	// TODO: validation
+	// TODO: validation <-checked by Kurotaka
 	// http.StatusBadRequest(400)
 	ctx := c.Request().Context()
 
 	req := new(addItemRequest)
 	if err := c.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	//validation  (whether name is too long)
+	if utf8.RuneCountInString(req.Name) > 50 {
+		return echo.NewHTTPError(http.StatusBadRequest, "ItemName must be within 50 characters")
+	}
+
+	//validation  (whether price is minus)
+	if req.Price <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Price must be greater than 0")
 	}
 
 	userID, err := getUserID(c)
@@ -323,9 +334,9 @@ func (h *Handler) Sell(c echo.Context) error {
 	item, err := h.ItemRepo.GetItem(ctx, req.ItemID)
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
-	
+
 	if err != nil {
-		if errors.Is(err,sql.ErrNoRows){
+		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -349,7 +360,7 @@ func (h *Handler) GetOnSaleItems(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusNotFound(404)
 	if err != nil {
-		if errors.Is(err,sql.ErrNoRows){
+		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusNotFound, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -383,7 +394,7 @@ func (h *Handler) GetItem(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusNotFound(404)
 	if err != nil {
-		if errors.Is(err,sql.ErrNoRows){
+		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusNotFound, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -417,7 +428,7 @@ func (h *Handler) GetUserItems(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusNotFound(404)
 	if err != nil {
-		if errors.Is(err,sql.ErrNoRows){
+		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusNotFound, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -446,7 +457,7 @@ func (h *Handler) GetCategories(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusNotFound(404)
 	if err != nil {
-		if errors.Is(err,sql.ErrNoRows){
+		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusNotFound, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -495,7 +506,7 @@ func (h *Handler) AddBalance(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
 	if err != nil {
-		if errors.Is(err,sql.ErrNoRows){
+		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -520,7 +531,7 @@ func (h *Handler) GetBalance(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
 	if err != nil {
-		if errors.Is(err,sql.ErrNoRows){
+		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -548,7 +559,7 @@ func (h *Handler) Purchase(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
 	if err != nil {
-		if errors.Is(err,sql.ErrNoRows){
+		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -557,19 +568,18 @@ func (h *Handler) Purchase(c echo.Context) error {
 	item, err := h.ItemRepo.GetItem(ctx, int32(itemID))
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
-	
+
 	if err != nil {
-		if errors.Is(err,sql.ErrNoRows){
+		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-	
-	
+
 	// TODO: if it is fail here, item status is still sold <- checked
 	// TODO: not to buy own items. 自身の商品を買おうとしていたら、http.StatusPreconditionFailed(412) <- checked
 	sellerID := item.UserID
-	if sellerID == userID{
+	if sellerID == userID {
 		return echo.NewHTTPError(http.StatusPreconditionFailed, "not to buy own items")
 	}
 
@@ -577,7 +587,7 @@ func (h *Handler) Purchase(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
 	if err != nil {
-		if errors.Is(err,sql.ErrNoRows){
+		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -588,23 +598,22 @@ func (h *Handler) Purchase(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-
 	if err := h.UserRepo.UpdateBalance(ctx, sellerID, seller.Balance+item.Price); err != nil {
 		h.UserRepo.UpdateBalance(ctx, userID, user.Balance+item.Price)
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	// status change
-	status,err := h.ItemRepo.GetItemStatus(ctx, int32(itemID));// get now status
+	status, err := h.ItemRepo.GetItemStatus(ctx, int32(itemID)) // get now status
 	if status == domain.ItemStatusOnSale {
 		if err := h.ItemRepo.UpdateItemStatus(ctx, int32(itemID), domain.ItemStatusSoldOut); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
-	}else{
+	} else {
 		// TODO: update only when item status is on sale <- checked
 		// http.StatusPreconditionFailed(412) <- checked
-		return echo.NewHTTPError(http.StatusPreconditionFailed,"item status is soldout")
-		
+		return echo.NewHTTPError(http.StatusPreconditionFailed, "item status is soldout")
+
 	}
 	return c.JSON(http.StatusOK, "successful")
 }
