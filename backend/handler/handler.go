@@ -185,14 +185,15 @@ func (h *Handler) Login(c echo.Context) error {
 	}
 
 	//get the maximum value of the existing UserIDs
-	max_id, err := h.UserRepo.GetMaxUserID(ctx)
+	max_id,err:=h.UserRepo.GetMaxUserID(ctx)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError,err)
 	}
 
 	//validation (whether userid is existing)
-	if req.UserID < 1 || req.UserID > max_id {
-		return echo.NewHTTPError(http.StatusBadRequest, "UserID is invalid")
+	if req.UserID<1||req.UserID>max_id{
+		return echo.NewHTTPError(http.StatusBadRequest,"UserID is invalid")
+
 	}
 
 	//validation (whether password is empty)
