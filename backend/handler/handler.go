@@ -515,17 +515,10 @@ func (h *Handler) Purchase(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 
-	// TODO: overflow
-	itemID, err := strconv.Atoi(c.Param("itemID"))
+	// TODO: overflow <- checked?
+	//itemID, err := strconv.Atoi(c.Param("itemID"))
+	itemID, err := strconv.ParseInt(c.Param("itemID"), 10, 64) //use ParseInt instead of atoi
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
-
-	// TODO: update only when item status is on sale
-	// http.StatusPreconditionFailed(412)
-
-	// オーバーフローしていると。ここのint32(itemID)がバグって正常に処理ができないはず
-	if err := h.ItemRepo.UpdateItemStatus(ctx, int32(itemID), domain.ItemStatusSoldOut); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
@@ -542,15 +535,14 @@ func (h *Handler) Purchase(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-
-	// TODO: if it is fail here, item status is still sold
-	// TODO: balance consistency
-	// TODO: not to buy own items. 自身の商品を買おうとしていたら、http.StatusPreconditionFailed(412)
-	if err := h.UserRepo.UpdateBalance(ctx, userID, user.Balance-item.Price); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
-
+	
+	
+	// TODO: if it is fail here, item status is still sold <- checked
+	// TODO: not to buy own items. 自身の商品を買おうとしていたら、http.StatusPreconditionFailed(412) <- checked
 	sellerID := item.UserID
+	if sellerID == userID{
+		return echo.NewHTTPError(http.StatusPreconditionFailed, "not to buy own items")
+	}
 
 	seller, err := h.UserRepo.GetUser(ctx, sellerID)
 	// TODO: not found handling
@@ -559,10 +551,28 @@ func (h *Handler) Purchase(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	if err := h.UserRepo.UpdateBalance(ctx, sellerID, seller.Balance+item.Price); err != nil {
+	// TODO: balance consistency <- checked?
+	if err := h.UserRepo.UpdateBalance(ctx, userID, user.Balance-item.Price); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
+	if err := h.UserRepo.UpdateBalance(ctx, sellerID, seller.Balance+item.Price); err != nil {
+		h.UserRepo.UpdateBalance(ctx, userID, user.Balance+item.Price)
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	// status change
+	status,err := h.ItemRepo.GetItemStatus(ctx, int32(itemID));// get now status
+	if status == domain.ItemStatusOnSale {
+		if err := h.ItemRepo.UpdateItemStatus(ctx, int32(itemID), domain.ItemStatusSoldOut); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
+		}
+	}else{
+		// TODO: update only when item status is on sale <- checked
+		// http.StatusPreconditionFailed(412) <- checked
+		return echo.NewHTTPError(http.StatusPreconditionFailed,"item status is soldout")
+		
+	}
 	return c.JSON(http.StatusOK, "successful")
 }
 
