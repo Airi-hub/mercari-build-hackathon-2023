@@ -323,7 +323,7 @@ func (h *Handler) Sell(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
 	if item == nil {
-		return echo.NewHTTPError(http.StatusPreconditionFailed, err)
+		return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -347,7 +347,7 @@ func (h *Handler) GetOnSaleItems(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusNotFound(404)
 	if items == nil {
-		return echo.NewHTTPError(http.StatusNotFound, err)
+		return echo.NewHTTPError(http.StatusNotFound, "not found handling")
 	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -381,7 +381,7 @@ func (h *Handler) GetItem(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusNotFound(404)
 	if item == nil {
-		return echo.NewHTTPError(http.StatusNotFound, err)
+		return echo.NewHTTPError(http.StatusNotFound, "not found handling")
 	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -415,7 +415,7 @@ func (h *Handler) GetUserItems(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusNotFound(404)
 	if items == nil {
-		return echo.NewHTTPError(http.StatusNotFound, err)
+		return echo.NewHTTPError(http.StatusNotFound, "not found handling")
 	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -444,7 +444,7 @@ func (h *Handler) GetCategories(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusNotFound(404)
 	if cats == nil {
-		return echo.NewHTTPError(http.StatusNotFound, err)
+		return echo.NewHTTPError(http.StatusNotFound, "not found handling")
 	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -493,7 +493,7 @@ func (h *Handler) AddBalance(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
 	if user == nil {
-		return echo.NewHTTPError(http.StatusPreconditionFailed, err)
+		return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -518,7 +518,7 @@ func (h *Handler) GetBalance(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
 	if user == nil {
-		return echo.NewHTTPError(http.StatusPreconditionFailed, err)
+		return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -553,7 +553,7 @@ func (h *Handler) Purchase(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
 	if user == nil {
-		return echo.NewHTTPError(http.StatusPreconditionFailed, err)
+		return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -563,7 +563,7 @@ func (h *Handler) Purchase(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
 	if item == nil {
-		return echo.NewHTTPError(http.StatusPreconditionFailed, err)
+		return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -582,7 +582,7 @@ func (h *Handler) Purchase(c echo.Context) error {
 	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
 	if seller == nil {
-		return echo.NewHTTPError(http.StatusPreconditionFailed, err)
+		return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
