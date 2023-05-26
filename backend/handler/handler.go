@@ -321,6 +321,9 @@ func (h *Handler) Sell(c echo.Context) error {
 	}
 
 	item, err := h.ItemRepo.GetItem(ctx, req.ItemID)
+	if item.Price <= 0{
+		return echo.NewHTTPError(http.StatusInternalServerError, "user add minus price")
+	}
 	// TODO: not found handling
 	// http.StatusPreconditionFailed(412)
 	if err != nil {
@@ -373,6 +376,7 @@ func (h *Handler) GetItem(c echo.Context) error {
 	}
 
 	item, err := h.ItemRepo.GetItem(ctx, int32(itemID))
+
 	// TODO: not found handling
 	// http.StatusNotFound(404)
 	if err != nil {
