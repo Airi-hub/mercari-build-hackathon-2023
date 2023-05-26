@@ -471,7 +471,7 @@ func (h *Handler) AddBalance(c echo.Context) error {
 
 	req := new(addBalanceRequest)
 	if req.Balance <= 0{
-		return echo.NewHTTPError(http.StatusInternalServerError, "user add minus balance")
+		return echo.NewHTTPError(http.StatusBadRequest, "user add minus balance")
 	}
 	if err := c.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
