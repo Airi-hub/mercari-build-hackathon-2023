@@ -65,6 +65,7 @@ type ItemRepository interface {
 	GetCategory(ctx context.Context, id int64) (domain.Category, error)
 	GetCategories(ctx context.Context) ([]domain.Category, error)
 	UpdateItemStatus(ctx context.Context, id int32, status domain.ItemStatus) error
+	GetItemStatus(ctx context.Context, id int32) (domain.ItemStatus, error)
 }
 
 type ItemDBRepository struct {
@@ -98,6 +99,7 @@ func (r *ItemDBRepository) AddCategory(ctx context.Context, categoryName domain.
 	var res domain.Category
 	return res, row.Scan(&res.ID, &res.Name)
 }
+
 
 func (r *ItemDBRepository) GetItem(ctx context.Context, id int32) (domain.Item, error) {
 	row := r.QueryRowContext(ctx, "SELECT * FROM items WHERE id = ?", id)
@@ -159,6 +161,13 @@ func (r *ItemDBRepository) UpdateItemStatus(ctx context.Context, id int32, statu
 		return err
 	}
 	return nil
+}
+
+func (r *ItemDBRepository) GetItemStatus(ctx context.Context, id int32) (domain.ItemStatus, error) {
+	row := r.QueryRowContext(ctx, "SELECT status FROM items WHERE id = ?", id)
+	
+	var status domain.ItemStatus
+	return status, row.Scan(&status)
 }
 
 func (r *ItemDBRepository) GetCategory(ctx context.Context, id int64) (domain.Category, error) {
