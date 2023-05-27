@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { MerComponent } from "../MerComponent";
 import { toast } from "react-toastify";
 import { ItemList } from "../ItemList";
+import { UserItemList } from "../UserItemList";
 import { fetcher } from "../../helper";
 
 interface Item {
@@ -103,7 +104,7 @@ export const UserProfile: React.FC = () => {
 
           <div>
             <h2>Item List</h2>
-            {<ItemList items={items} />}
+            {<UserItemList items={items} />}
           </div>
         </div>
       </div>

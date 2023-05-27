@@ -3,10 +3,12 @@ import { useCookies } from "react-cookie";
 import { MerComponent } from "../MerComponent";
 import { toast } from "react-toastify";
 import { fetcher } from "../../helper";
+
 interface Category {
   id: number;
   name: string;
 }
+
 type formDataType = {
   name: string;
   category_id: number;
@@ -14,7 +16,12 @@ type formDataType = {
   description: string;
   image: string | File;
 };
-export const Listing: React.FC = () => {
+
+export const EditItem = () => {
+  var currentURL = window.location.href;
+  var parts = currentURL.split("/");
+  var item_id = parts[parts.length - 1];
+
   const initialState = {
     name: "",
     category_id: 1,
@@ -24,27 +31,32 @@ export const Listing: React.FC = () => {
   };
   const [values, setValues] = useState<formDataType>(initialState);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [cookies] = useCookies(["token", "userID"]);
+  const [cookies] = useCookies(["userID", "token"]);
+
   //Add the new state here
   const [newCategoryName, setNewCategoryName]=useState("");
+
   const onValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValues({
       ...values,
       [event.target.name]: event.target.value,
     });
   };
+
   const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setValues({
       ...values,
       [event.target.name]: event.target.value,
     });
   };
+
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValues({
       ...values,
       [event.target.name]: event.target.files![0],
     });
   };
+
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData();
@@ -53,8 +65,9 @@ export const Listing: React.FC = () => {
     data.append("price", values.price.toString());
     data.append("description", values.description);
     data.append("image", values.image);
-    fetcher<{ id: number }>(`/items`, {
-      method: "POST",
+
+    fetcher<{ id: number }>(`/items/${item_id}`, {
+      method: "PUT",
       body: data,
       headers: {
         Authorization: `Bearer ${cookies.token}`,
@@ -88,25 +101,9 @@ export const Listing: React.FC = () => {
         toast.error(error.message);
         console.error("POST error:", error);
       });
-  // const sell = (itemID: number) =>
-  //   fetcher(`/sell`, {
-  //     method: "POST",
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${cookies.token}`,
-  //     },
-  //     body: JSON.stringify({
-  //       item_id: itemID,
-  //     }),
-  //   })
-  //     .then((_) => {
-  //       toast.success("Item added successfully!");
-  //     })
-  //     .catch((error: Error) => {
-  //       toast.error(error.message);
-  //       console.error("POST error:", error);
-  //     });
+
+
+
 
   const fetchCategories = () => {
     fetcher<Category[]>(`/items/categories`, {
@@ -122,6 +119,8 @@ export const Listing: React.FC = () => {
         toast.error(err.message);
       });
   };
+
+
   const addNewCategory = () => {
     fetcher(`/items/new_category`, {
       method: "POST",
@@ -142,9 +141,11 @@ export const Listing: React.FC = () => {
         toast.error(error.message);
       });
   };
+
   useEffect(() => {
     fetchCategories();
   }, []);
+
   return (
     <MerComponent>
       <div className="Listing">
