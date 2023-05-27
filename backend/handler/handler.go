@@ -134,14 +134,6 @@ func GetSecret() string {
 	return "secret-key"
 }
 
-
-// func (h *Handler) SearchItemByName(c echo.Context) error {
-// 	// keyword := c.QueryParam("keyword")
-// 	// item, err := h.ItemRepo.SearchItemByName(c.Request().Context(), keyword)
-//     return c.JSON(http.StatusOK, InitializeResponse{Message: "Success"})
-// }
-
-
 func (h *Handler) SearchItemByName(c echo.Context) error {
 	ctx := c.Request().Context()
 	keyword := c.QueryParam("name")

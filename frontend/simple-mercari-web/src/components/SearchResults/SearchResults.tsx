@@ -16,10 +16,11 @@ interface Item {
   category_name: string;
 }
 export const SearchResults = () => {
-  const currentURL = window.location.href;
+  var currentURL = window.location.href;
   const [cookies] = useCookies(["userID", "token"]);
   const [items, setItems] = useState<Item[]>([]);
   var name = currentURL.substring(currentURL.indexOf("=") + 1);
+
   const fetchItems = () => {
     fetcher<Item[]>(`/search?name=${name}`, {
       method: "GET",
@@ -40,7 +41,7 @@ export const SearchResults = () => {
 
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [currentURL]);
 
   const signUpAndSignInPage = (
     <>
