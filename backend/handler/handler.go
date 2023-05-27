@@ -272,16 +272,30 @@ func (h *Handler) Sell(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	// TODO: check req.UserID and item.UserID
+	// TODO: check req.UserID and item.UserID <--checked
 	// http.StatusPreconditionFailed(412)
-	// TODO: only update when status is initial
+	// TODO: only update when status is initial <--checked
 	// http.StatusPreconditionFailed(412)
-	if err := h.ItemRepo.UpdateItemStatus(ctx, item.ID, domain.ItemStatusOnSale); err != nil {
+
+	// リクエストユーザーIDとアイテムユーザーIDが一致するかどうか確認
+	if req.UserID != item.UserID {
+		return echo.NewHTTPError(http.StatusPreconditionFailed, "リクエストのユーザーIDがアイテムのユーザーIDと一致しません")
+	}
+
+	// 初期状態の場合のみ、アイテムのステータスを更新
+	if item.Status != domain.ItemStatusInitial {
+		return echo.NewHTTPError(http.StatusPreconditionFailed, "アイテムのステータスが初期状態ではありません")
+	}
+
+	// アイテムのステータスを "OnSale "に更新
+	item.Status = domain.ItemStatusOnSale
+
+	// 更新されたitemを保存
+	if err := h.ItemRepo.UpdateItem(ctx, item); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	return c.JSON(http.StatusOK, "successful")
-}
 
 func (h *Handler) GetOnSaleItems(c echo.Context) error {
 	ctx := c.Request().Context()
