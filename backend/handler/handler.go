@@ -375,7 +375,7 @@ func (h *Handler) Sell(c echo.Context) error {
 		}
 	
 		return c.JSON(http.StatusOK, "successful")
-	}
+}
 	
 func (h *Handler) GetOnSaleItems(c echo.Context) error {
 	ctx := c.Request().Context()
