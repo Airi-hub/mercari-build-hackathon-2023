@@ -8,14 +8,24 @@ const wrap = <T>(task: Promise<Response>): Promise<T> => {
           response
             .json()
             .then((json) => {
-              // jsonが取得できた場合だけresolve
               resolve(json);
             })
             .catch((error) => {
               reject(error);
             });
         } else {
-          reject(response);
+          response
+            .json()
+            .then((json) => {
+              // If the response includes a 'message' field, reject with that message.
+              // Otherwise, reject with the entire response.
+              const errorMessage = json.message || response;
+              reject(new Error(errorMessage));
+            })
+            .catch((error) => {
+              // If the response couldn't be parsed as JSON, reject with the whole response.
+              reject(error);
+            });
         }
       })
       .catch((error) => {
@@ -23,7 +33,6 @@ const wrap = <T>(task: Promise<Response>): Promise<T> => {
       });
   });
 };
-
 const wrapBlob = (task: Promise<Response>): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     task
