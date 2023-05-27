@@ -91,7 +91,7 @@ func (r *ItemDBRepository) AddItem(ctx context.Context, item domain.Item) (domai
 }
 
 func (r *ItemDBRepository) PutItem(ctx context.Context, item domain.Item, itemID int64) (domain.Item, error) {
-	if _, err := r.ExecContext(ctx, "UPDATE items SET name = ?, price = ?, description = ?, category_id = ?, seller_id = ?, image = ?, status = ? WHERE ID = ?", item.Name, item.Price, item.Description, item.CategoryID, item.UserID, item.Image, item.Status,itemID); err != nil {
+	if _, err := r.ExecContext(ctx, "UPDATE items SET name = ?, price = ?, description = ?, category_id = ?, seller_id = ?, status = ? WHERE ID = ?", item.Name, item.Price, item.Description, item.CategoryID, item.UserID, item.Status,itemID); err != nil {
 		return domain.Item{}, err
 	}
 	// TODO: if other insert query is executed at the same time, it might return wrong id

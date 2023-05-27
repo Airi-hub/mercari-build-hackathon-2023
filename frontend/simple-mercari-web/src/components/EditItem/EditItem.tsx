@@ -66,25 +66,6 @@ export const EditItem = () => {
     data.append("description", values.description);
     data.append("image", values.image);
 
-    // fetcher(`/items/${item_id}`, {
-    //   method: "PUT",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${cookies.token}`,
-    //   },
-    //   body: JSON.stringify({
-    //     item_id: item_id,
-    //   }),
-    // })
-    //   .then((_) => {
-    //     toast.success("Item added successfully!");
-    //   })
-    //   .catch((error: Error) => {
-    //     toast.error(error.message);
-    //     console.error("PUT error:", error);
-    //   });}
-
     fetcher<{ id: number }>(`/items/${item_id}`, {
       method: "PUT",
       body: data,
