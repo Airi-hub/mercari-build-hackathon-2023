@@ -73,6 +73,7 @@ type getCategoriesResponse struct {
 
 type sellRequest struct {
 	ItemID int32 `json:"item_id"`
+	UserID int64 `json:"user_id"`
 }
 
 type addItemRequest struct {
@@ -296,6 +297,7 @@ func (h *Handler) Sell(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, "successful")
+}
 
 func (h *Handler) GetOnSaleItems(c echo.Context) error {
 	ctx := c.Request().Context()
