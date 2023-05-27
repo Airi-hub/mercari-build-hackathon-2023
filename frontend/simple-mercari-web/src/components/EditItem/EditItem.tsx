@@ -17,7 +17,11 @@ type formDataType = {
   image: string | File;
 };
 
-export const Listing: React.FC = () => {
+export const EditItem = () => {
+  var currentURL = window.location.href;
+  var parts = currentURL.split("/");
+  var item_id = parts[parts.length - 1];
+
   const initialState = {
     name: "",
     category_id: 1,
@@ -27,7 +31,7 @@ export const Listing: React.FC = () => {
   };
   const [values, setValues] = useState<formDataType>(initialState);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [cookies] = useCookies(["token", "userID"]);
+  const [cookies] = useCookies(["userID", "token"]);
 
   //Add the new state here
   const [newCategoryName, setNewCategoryName]=useState("");
@@ -62,38 +66,44 @@ export const Listing: React.FC = () => {
     data.append("description", values.description);
     data.append("image", values.image);
 
-    fetcher<{ id: number }>(`/items`, {
-      method: "POST",
+    fetcher<{ id: number }>(`/items/${item_id}`, {
+      method: "PUT",
       body: data,
       headers: {
         Authorization: `Bearer ${cookies.token}`,
       },
     })
+      .then((res) => {
+        sell(res.id);
+      })
       .catch((error: Error) => {
         toast.error(error.message);
         console.error("POST error:", error);
       });
   };
 
-  // const sell = (itemID: number) =>
-  //   fetcher(`/sell`, {
-  //     method: "POST",
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${cookies.token}`,
-  //     },
-  //     body: JSON.stringify({
-  //       item_id: itemID,
-  //     }),
-  //   })
-  //     .then((_) => {
-  //       toast.success("Item added successfully!");
-  //     })
-  //     .catch((error: Error) => {
-  //       toast.error(error.message);
-  //       console.error("POST error:", error);
-  //     });
+  const sell = (itemID: number) =>
+    fetcher(`/sell`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${cookies.token}`,
+      },
+      body: JSON.stringify({
+        item_id: itemID,
+      }),
+    })
+      .then((_) => {
+        toast.success("Item added successfully!");
+      })
+      .catch((error: Error) => {
+        toast.error(error.message);
+        console.error("POST error:", error);
+      });
+
+
+    
 
   const fetchCategories = () => {
     fetcher<Category[]>(`/items/categories`, {
