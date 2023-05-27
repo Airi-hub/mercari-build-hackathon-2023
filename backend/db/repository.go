@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/Airi-hub/mecari-build-hackathon-2023/backend/domain"
@@ -25,11 +26,17 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (r *UserDBRepository) AddUser(ctx context.Context, user domain.User) (int64, error) {
-	row_ := r.QueryRowContext(ctx, "SELECT id FROM users WHERE rowid = LAST_INSERT_ROWID()")
-	var id_ int64
-	err := row_.Scan(&id_)
-	if err != nil {
-		return 0, err
+	row_ := r.QueryRowContext(ctx, "SELECT MAX(id) FROM users")
+	var id_ sql.NullInt64
+	err_ := row_.Scan(&id_)
+
+	if err_ != nil {
+		// エラー処理
+		return 0, err_
+	} else if !id_.Valid {
+		// MAX(id)がNULLを返した場合の処理
+		id_.Int64 = 0
+		id_.Valid = true
 	}
 
 	if _, err := r.ExecContext(ctx, "INSERT INTO users (name, password) VALUES (?, ?)", user.Name, user.Password); err != nil {
@@ -39,13 +46,13 @@ func (r *UserDBRepository) AddUser(ctx context.Context, user domain.User) (int64
 	// http.StatusConflict(409) 既に同じIDがあった場合
 	row := r.QueryRowContext(ctx, "SELECT id FROM users WHERE rowid = LAST_INSERT_ROWID()")
 	var id int64
-	err = row.Scan(&id)
+	err := row.Scan(&id)
 	if err != nil {
 		return 0, err
 	}
 
-	if id != id_+1 {
-		return 0, echo.NewHTTPError(http.StatusConflict, "conflicted")
+	if id != id_.Int64+1 {
+		return 0, echo.NewHTTPError(http.StatusConflict, fmt.Sprintf("Conflicted: id is %d, but id_.Int64 is %d", id, id_.Int64))
 	}
 
 	return id, nil
