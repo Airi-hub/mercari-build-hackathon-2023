@@ -83,17 +83,20 @@ type addItemRequest struct {
 	Description string `form:"description"`
 }
 
+type addItemResponse struct {
+	ID int64 `json:"id"`
+}
+
 type putItemRequest struct {
 	Name        string `form:"name"`
 	CategoryID  int64  `form:"category_id"`
 	Price       int64  `form:"price"`
 	Description string `form:"description"`
 }
-
-
-type addItemResponse struct {
+type putItemResponse struct {
 	ID int64 `json:"id"`
 }
+
 
 type addCategoryRequest struct {
 	Name string `form:"name"`
@@ -374,6 +377,7 @@ func (h *Handler) Sell(c echo.Context) error {
 	if err := c.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
+	
 
 	item, err := h.ItemRepo.GetItem(ctx, req.ItemID)
 	if item.Price <= 0 {
@@ -760,7 +764,7 @@ func (h *Handler) PutItem(c echo.Context) error {
 	}
 	fmt.Printf(req.Name,req.CategoryID,userID,req.Description,domain.ItemStatusInitial)
 
-	return c.JSON(http.StatusOK, addItemResponse{ID: int64(item.ID)})
+	return c.JSON(http.StatusOK, putItemResponse{ID: int64(item.ID)})
 }
 
 

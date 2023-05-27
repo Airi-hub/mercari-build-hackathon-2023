@@ -91,12 +91,12 @@ func (r *ItemDBRepository) AddItem(ctx context.Context, item domain.Item) (domai
 }
 
 func (r *ItemDBRepository) PutItem(ctx context.Context, item domain.Item, itemID int64) (domain.Item, error) {
-	if _, err := r.ExecContext(ctx, "UPDATE items SET name = ?, price = ?, description = ?, category_id = ?, seller_id = ?, image = ?, status = ? WHERE id = ?", item.Name, item.Price, item.Description, item.CategoryID, item.UserID, item.Image, item.Status,itemID); err != nil {
+	if _, err := r.ExecContext(ctx, "UPDATE items SET name = ?, price = ?, description = ?, category_id = ?, seller_id = ?, image = ?, status = ? WHERE ID = ?", item.Name, item.Price, item.Description, item.CategoryID, item.UserID, item.Image, item.Status,itemID); err != nil {
 		return domain.Item{}, err
 	}
 	// TODO: if other insert query is executed at the same time, it might return wrong id
 	// http.StatusConflict(409) 既に同じIDがあった場合
-	row := r.QueryRowContext(ctx, "SELECT * FROM items WHERE id = ?",itemID)
+	row := r.QueryRowContext(ctx, "SELECT * FROM items WHERE ID = ?",itemID)
 
 	var res domain.Item
 	return res, row.Scan(&res.ID, &res.Name, &res.Price, &res.Description, &res.CategoryID, &res.UserID, &res.Image, &res.Status, &res.CreatedAt, &res.UpdatedAt)
