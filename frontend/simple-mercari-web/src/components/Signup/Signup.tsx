@@ -11,30 +11,6 @@ export const Signup = () => {
   const [_, setCookie] = useCookies(["userID"]);
 
   const navigate = useNavigate();
-  const onSubmit = (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    fetcher<{ id: number; name: string }>(`/register`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-        password: password,
-      }),
-    })
-      .then((user) => {
-        toast.success("New account is created!");
-        console.log("POST success:", user.id);
-        setCookie("userID", user.id);
-        setUserID(user.id);
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log(`POST error:`, err);
-        toast.error(err.message);
-      });
-  };
 
   return (
     <div>
@@ -60,7 +36,7 @@ export const Signup = () => {
             setPassword(e.target.value);
           }}
         />
-        <button onClick={onSubmit} id="MerButton">
+        <button id="MerButton">
           Signup
         </button>
         {userID ? (

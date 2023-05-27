@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { MerComponent } from "../MerComponent";
 import { toast } from "react-toastify";
-import { fetcher } from "../../helper";
+import { fetcher, getGetParams, getPostParams, handleGetError, handlePostError } from "../../helper";
 
 interface Category {
   id: number;
@@ -30,20 +30,13 @@ export const Listing: React.FC = () => {
   const [cookies] = useCookies(["token", "userID"]);
 
   //Add the new state here
-  const [newCategoryName, setNewCategoryName]=useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
 
-  const onValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValues({
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement|HTMLSelectElement>) => {
+    setValues(values => ({
       ...values,
       [event.target.name]: event.target.value,
-    });
-  };
-
-  const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setValues({
-      ...values,
-      [event.target.name]: event.target.value,
-    });
+    }));
   };
 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,129 +71,85 @@ export const Listing: React.FC = () => {
       });
   };
 
-  const sell = (itemID: number) =>
-    fetcher(`/sell`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${cookies.token}`,
-      },
-      body: JSON.stringify({
-        item_id: itemID,
-      }),
-    })
-      .then((_) => {
-        toast.success("Item added successfully!");
-      })
-      .catch((error: Error) => {
-        toast.error(error.message);
-        console.error("POST error:", error);
-      });
-
-  const fetchCategories = () => {
-    fetcher<Category[]>(`/items/categories`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    })
-      .then((items) => setCategories(items))
-      .catch((err) => {
-        console.log(`GET error:`, err);
-        toast.error(err.message);
-      });
+  const sell = async (itemID: number) => {
+    const response = await fetcher(`/sell`, getPostParams({
+      item_id: itemID,
+    }, cookies.token)).catch(handlePostError)
+    if (response) toast.success("Item added successfully!");
+  }
+  const fetchCategories = async () => {
+    const items = await fetcher<Category[]>(`/items/categories`, getGetParams()).catch(handleGetError)
+    if (items) setCategories(items)
   };
 
 
-  const addNewCategory = () => {
-    fetcher(`/items/new_category`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${cookies.token}`,
-      },
-      body: JSON.stringify({
-        name: newCategoryName,
-      }),
-    })
-      .then((newCategory) => {
-        setCategories([...categories, newCategory]); // Add the new category to the list
-        setNewCategoryName(""); // Clear the new category name field
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
+  const addNewCategory = async () => {
+    const newCategory = await fetcher(`/items/new_category`, getPostParams({
+      name: newCategoryName,
+    }, cookies.token)).catch(handlePostError)
+    if (newCategory) {
+      setCategories(categories => [...categories, newCategory]); // Add the new category to the list
+      setNewCategoryName(""); // Clear the new category name field
+    }
   };
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  return (
-    <MerComponent>
-      <div className="Listing">
-        <form onSubmit={onSubmit} className="ListingForm">
-          <div>
-            <input
-              type="text"
-              name="name"
-              id="MerTextInput"
-              placeholder="name"
-              onChange={onValueChange}
-              required
-            />
-            <div>  
-              <input // New category input field
-                type="text"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                placeholder="Enter new category"
-              />
-              <button type="button" onClick={addNewCategory}>Add Category</button>
-            </div>
-            <select
-              name="category_id"
-              id="MerTextInput"
-              value={values.category_id}
-              onChange={onSelectChange}
-            >
-              {categories &&
-                categories.map((category) => {
-                  return <option value={category.id}>{category.name}</option>;
-                })}
-            </select>
-            <input
-              type="number"
-              name="price"
-              id="MerTextInput"
-              placeholder="price"
-              onChange={onValueChange}
-              required
-            />
-            <input
-              type="text"
-              name="description"
-              id="MerTextInput"
-              placeholder="description"
-              onChange={onValueChange}
-              required
-            />
-            <input
-              type="file"
-              name="image"
-              id="MerTextInput"
-              onChange={onFileChange}
-              required
-            />
-            <button type="submit" id="MerButton">
-              List this item
-            </button>
-          </div>
-        </form>
-      </div>
-    </MerComponent>
-  );
+  return <form onSubmit={onSubmit} className="component">
+        <input
+          className="input"
+          type="text"
+          name="name"
+          placeholder="name"
+          onChange={handleChange}
+          required
+        />
+        <div className="p-2 border border-white rounded-md">
+          <input // New category input field
+          className="input"
+          type="text"
+            value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e.target.value)}
+            placeholder="Enter new category"
+          />
+          <button type="button" onClick={addNewCategory}>Add Category</button>
+        </div>
+        <select
+          className="input"
+          name="category_id"
+          value={values.category_id}
+          onChange={handleChange}
+        >
+          {categories &&
+            categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+        </select>
+        <input
+          className="input"
+          type="number"
+          name="price"
+          placeholder="price"
+          onChange={handleChange}
+          required
+        />
+        <input
+          className="input"
+          type="text"
+          name="description"
+          placeholder="description"
+          onChange={handleChange}
+          required
+        />
+        <input
+          className="input"
+          type="file"
+          name="image"
+          onChange={onFileChange}
+          required
+        />
+        <button type="submit" className="button button-wide">
+          List this item
+        </button>
+    </form>
 };

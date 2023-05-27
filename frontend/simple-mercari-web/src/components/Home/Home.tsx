@@ -40,28 +40,11 @@ export const Home = () => {
     fetchItems();
   }, []);
 
-  const signUpAndSignInPage = (
-    <>
-      <div>
-        <Signup />
-      </div>
-      or
-      <div>
-        <Login />
-      </div>
-    </>
-  );
-
   const itemListPage = (
-    <MerComponent>
-      <div>
-        <span>
-          <p>Logined User ID: {cookies.userID}</p>
-        </span>
-        <ItemList items={items} />
-      </div>
-    </MerComponent>
+    <div className="component">
+      <ItemList items={items} />
+    </div>
   );
 
-  return <>{cookies.token ? itemListPage : signUpAndSignInPage}</>;
+  return <>{itemListPage}</>;
 };
