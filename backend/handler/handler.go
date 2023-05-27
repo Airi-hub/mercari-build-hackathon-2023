@@ -158,10 +158,9 @@ func (h *Handler) SearchItemByName(c echo.Context) error {
 				res = append(res, searchItem{ID: item.ID, Name: item.Name, Price: item.Price, CategoryName: cat.Name})
 			}
 		}
-	}	
+	}
 	return c.JSON(http.StatusOK, res)
 }
-
 
 func (h *Handler) Initialize(c echo.Context) error {
 	err := os.Truncate(logFile, 0)
@@ -638,6 +637,10 @@ func (h *Handler) Purchase(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	if user.Balance-item.Price < 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "insufficient balance")
 	}
 
 	// TODO: balance consistency <- checked?
