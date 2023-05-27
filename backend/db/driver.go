@@ -34,5 +34,15 @@ func PrepareDB(ctx context.Context) (*sql.DB, error) {
 		return nil, errors.Wrap(err, "failed to exec query: %w")
 	}
 
+	_, err = db.Exec(`
+	INSERT INTO category (name) VALUES ('food');
+	INSERT INTO category (name) VALUES ('fashion');
+	INSERT INTO category (name) VALUES ('food');
+	INSERT INTO category (name) VALUES ('book');
+	`)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to insert into category: %w")
+	}
+
 	return db, nil
 }
