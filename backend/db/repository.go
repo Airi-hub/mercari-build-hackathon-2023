@@ -3,8 +3,11 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"net/http"
 
 	"github.com/Airi-hub/mecari-build-hackathon-2023/backend/domain"
+	"github.com/labstack/echo/v4"
 )
 
 type UserRepository interface {
@@ -23,15 +26,36 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (r *UserDBRepository) AddUser(ctx context.Context, user domain.User) (int64, error) {
+	row_ := r.QueryRowContext(ctx, "SELECT MAX(id) FROM users")
+	var id_ sql.NullInt64
+	err_ := row_.Scan(&id_)
+
+	if err_ != nil {
+		// エラー処理
+		return 0, err_
+	} else if !id_.Valid {
+		// MAX(id)がNULLを返した場合の処理
+		id_.Int64 = 0
+		id_.Valid = true
+	}
+
 	if _, err := r.ExecContext(ctx, "INSERT INTO users (name, password) VALUES (?, ?)", user.Name, user.Password); err != nil {
 		return 0, err
 	}
 	// TODO: if other insert query is executed at the same time, it might return wrong id
 	// http.StatusConflict(409) 既に同じIDがあった場合
 	row := r.QueryRowContext(ctx, "SELECT id FROM users WHERE rowid = LAST_INSERT_ROWID()")
-
 	var id int64
-	return id, row.Scan(&id)
+	err := row.Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	if id != id_.Int64+1 {
+		return 0, echo.NewHTTPError(http.StatusConflict, fmt.Sprintf("Conflicted: id is %d, but id_.Int64 is %d", id, id_.Int64))
+	}
+
+	return id, nil
 }
 
 func (r *UserDBRepository) GetUser(ctx context.Context, id int64) (domain.User, error) {
@@ -101,7 +125,6 @@ func (r *ItemDBRepository) AddCategory(ctx context.Context, categoryName domain.
 	return res, row.Scan(&res.ID, &res.Name)
 }
 
-
 func (r *ItemDBRepository) GetItem(ctx context.Context, id int32) (domain.Item, error) {
 	row := r.QueryRowContext(ctx, "SELECT * FROM items WHERE id = ?", id)
 
@@ -166,7 +189,7 @@ func (r *ItemDBRepository) UpdateItemStatus(ctx context.Context, id int32, statu
 
 func (r *ItemDBRepository) GetItemStatus(ctx context.Context, id int32) (domain.ItemStatus, error) {
 	row := r.QueryRowContext(ctx, "SELECT status FROM items WHERE id = ?", id)
-	
+
 	var status domain.ItemStatus
 	return status, row.Scan(&status)
 }
@@ -200,7 +223,7 @@ func (r *ItemDBRepository) GetCategories(ctx context.Context) ([]domain.Category
 }
 
 func (r *ItemDBRepository) SearchItemByName(ctx context.Context, keyword string) ([]domain.Item, error) {
-	rows,err := r.QueryContext(ctx, "SELECT * FROM items WHERE items.name LIKE ?", "%"+keyword+"%")
+	rows, err := r.QueryContext(ctx, "SELECT * FROM items WHERE items.name LIKE ?", "%"+keyword+"%")
 	if err != nil {
 		return nil, err
 	}
@@ -218,6 +241,3 @@ func (r *ItemDBRepository) SearchItemByName(ctx context.Context, keyword string)
 	}
 	return items, nil
 }
-
-
-
