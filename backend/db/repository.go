@@ -4,13 +4,14 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/mercari-build/mecari-build-hackathon-2023/backend/domain"
+	"github.com/Airi-hub/mecari-build-hackathon-2023/backend/domain"
 )
 
 type UserRepository interface {
 	AddUser(ctx context.Context, user domain.User) (int64, error)
 	GetUser(ctx context.Context, id int64) (domain.User, error)
 	UpdateBalance(ctx context.Context, id int64, balance int64) error
+	GetMaxUserID(ctx context.Context) (int64, error)
 }
 
 type UserDBRepository struct {
@@ -47,8 +48,16 @@ func (r *UserDBRepository) UpdateBalance(ctx context.Context, id int64, balance 
 	return nil
 }
 
+func (r *UserDBRepository) GetMaxUserID(ctx context.Context) (int64, error) {
+	row := r.QueryRowContext(ctx, "SELECT MAX(id) FROM users")
+
+	var id int64
+	return id, row.Scan(&id)
+}
+
 type ItemRepository interface {
 	AddItem(ctx context.Context, item domain.Item) (domain.Item, error)
+	AddCategory(ctx context.Context, categoryName domain.Category) (domain.Category, error)
 	GetItem(ctx context.Context, id int32) (domain.Item, error)
 	GetItemImage(ctx context.Context, id int32) ([]byte, error)
 	GetOnSaleItems(ctx context.Context) ([]domain.Item, error)
@@ -56,6 +65,7 @@ type ItemRepository interface {
 	GetCategory(ctx context.Context, id int64) (domain.Category, error)
 	GetCategories(ctx context.Context) ([]domain.Category, error)
 	UpdateItemStatus(ctx context.Context, id int32, status domain.ItemStatus) error
+	GetItemStatus(ctx context.Context, id int32) (domain.ItemStatus, error)
 }
 
 type ItemDBRepository struct {
@@ -77,6 +87,19 @@ func (r *ItemDBRepository) AddItem(ctx context.Context, item domain.Item) (domai
 	var res domain.Item
 	return res, row.Scan(&res.ID, &res.Name, &res.Price, &res.Description, &res.CategoryID, &res.UserID, &res.Image, &res.Status, &res.CreatedAt, &res.UpdatedAt)
 }
+
+func (r *ItemDBRepository) AddCategory(ctx context.Context, categoryName domain.Category) (domain.Category, error) {
+	// Insert the new category into the database
+	if _, err := r.ExecContext(ctx, "INSERT INTO category (name) VALUES (?)", categoryName.Name); err != nil {
+		return domain.Category{}, err
+	}
+
+	row := r.QueryRowContext(ctx, "SELECT * FROM category WHERE rowid = LAST_INSERT_ROWID()")
+
+	var res domain.Category
+	return res, row.Scan(&res.ID, &res.Name)
+}
+
 
 func (r *ItemDBRepository) GetItem(ctx context.Context, id int32) (domain.Item, error) {
 	row := r.QueryRowContext(ctx, "SELECT * FROM items WHERE id = ?", id)
@@ -138,6 +161,13 @@ func (r *ItemDBRepository) UpdateItemStatus(ctx context.Context, id int32, statu
 		return err
 	}
 	return nil
+}
+
+func (r *ItemDBRepository) GetItemStatus(ctx context.Context, id int32) (domain.ItemStatus, error) {
+	row := r.QueryRowContext(ctx, "SELECT status FROM items WHERE id = ?", id)
+	
+	var status domain.ItemStatus
+	return status, row.Scan(&status)
 }
 
 func (r *ItemDBRepository) GetCategory(ctx context.Context, id int64) (domain.Category, error) {
