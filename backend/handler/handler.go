@@ -321,9 +321,9 @@ func (h *Handler) AddCategory(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-<<<<<<< HEAD
+
 	return c.JSON(http.StatusOK, addCategoryResponse{ID: int64(category.ID)})
-=======
+
 	// TODO: check req.UserID and item.UserID <--checked
 	// http.StatusPreconditionFailed(412)
 	// TODO: only update when status is initial <--checked
@@ -338,9 +338,9 @@ func (h *Handler) AddCategory(c echo.Context) error {
 	if item.Status != domain.ItemStatusInitial {
 		return echo.NewHTTPError(http.StatusPreconditionFailed, "アイテムのステータスが初期状態ではありません")
 	}
-	
+
 	return c.JSON(http.StatusOK, "successful")
->>>>>>> 93a13e5a19a6184dc140c3e7791c35374fb9f78f
+
 }
 
 
