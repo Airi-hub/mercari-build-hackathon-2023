@@ -3,8 +3,10 @@ package db
 import (
 	"context"
 	"database/sql"
+	"net/http"
 
 	"github.com/Airi-hub/mecari-build-hackathon-2023/backend/domain"
+	"github.com/labstack/echo/v4"
 )
 
 type UserRepository interface {
@@ -23,15 +25,30 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (r *UserDBRepository) AddUser(ctx context.Context, user domain.User) (int64, error) {
+	row_ := r.QueryRowContext(ctx, "SELECT id FROM users WHERE rowid = LAST_INSERT_ROWID()")
+	var id_ int64
+	err := row_.Scan(&id_)
+	if err != nil {
+		return 0, err
+	}
+
 	if _, err := r.ExecContext(ctx, "INSERT INTO users (name, password) VALUES (?, ?)", user.Name, user.Password); err != nil {
 		return 0, err
 	}
 	// TODO: if other insert query is executed at the same time, it might return wrong id
 	// http.StatusConflict(409) 既に同じIDがあった場合
 	row := r.QueryRowContext(ctx, "SELECT id FROM users WHERE rowid = LAST_INSERT_ROWID()")
-
 	var id int64
-	return id, row.Scan(&id)
+	err = row.Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	if id != id_+1 {
+		return 0, echo.NewHTTPError(http.StatusConflict, "conflicted")
+	}
+
+	return id, nil
 }
 
 func (r *UserDBRepository) GetUser(ctx context.Context, id int64) (domain.User, error) {
@@ -100,7 +117,6 @@ func (r *ItemDBRepository) AddCategory(ctx context.Context, categoryName domain.
 	return res, row.Scan(&res.ID, &res.Name)
 }
 
-
 func (r *ItemDBRepository) GetItem(ctx context.Context, id int32) (domain.Item, error) {
 	row := r.QueryRowContext(ctx, "SELECT * FROM items WHERE id = ?", id)
 
@@ -165,7 +181,7 @@ func (r *ItemDBRepository) UpdateItemStatus(ctx context.Context, id int32, statu
 
 func (r *ItemDBRepository) GetItemStatus(ctx context.Context, id int32) (domain.ItemStatus, error) {
 	row := r.QueryRowContext(ctx, "SELECT status FROM items WHERE id = ?", id)
-	
+
 	var status domain.ItemStatus
 	return status, row.Scan(&status)
 }
