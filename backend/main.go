@@ -84,7 +84,6 @@ func run(ctx context.Context) int {
 	e.GET("/items/:itemID/image", h.GetImage)
 	e.GET("/items/categories", h.GetCategories)
 	e.GET("/search", h.SearchItemByName)
-	e.PUT("/items/:itemID", h.PutItem)
 	e.POST("/register", h.Register)
 	e.POST("/login", h.Login)
 
@@ -93,6 +92,7 @@ func run(ctx context.Context) int {
 	l.Use(echojwt.WithConfig(config))
 	l.GET("/users/:userID/items", h.GetUserItems)
 	l.POST("/items", h.AddItem)
+	l.PUT("/items/:itemID", h.PutItem)
 	l.POST("/sell", h.Sell)
 	l.POST("/purchase/:itemID", h.Purchase)
 	l.GET("/balance", h.GetBalance)

@@ -696,7 +696,7 @@ func getEnv(key string, defaultValue string) string {
 
 func (h *Handler) PutItem(c echo.Context) error {
 	ctx := c.Request().Context()
-	// //itemID, _ := strconv.ParseInt(c.Param("itemID"), 10, 64) //use ParseInt instead of atoi
+	itemID, _ := strconv.ParseInt(c.Param("itemID"), 10, 64) //use ParseInt instead of atoi
 
 	req := new(putItemRequest)
 	if err := c.Bind(req); err != nil {
@@ -709,15 +709,15 @@ func (h *Handler) PutItem(c echo.Context) error {
 	}
 	//validation  (whether price is minus)
 	if req.Price <= 0 {
-		return echo.NewHTTPError(http.StatusBadRequest, "Price must be greater than 0")
+		return echo.NewHTTPError(http.StatusBadRequest, req)
 	}
 
-	var userID int64=13
+	// var userID int64=13
 
-	// userID, err := getUserID(c)
-	// if err != nil {
-	// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
-	// }
+	userID, err := getUserID(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err)
+	}
 	file, err := c.FormFile("image")
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
@@ -745,7 +745,7 @@ func (h *Handler) PutItem(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	item , err := h.ItemRepo.AddItem(c.Request().Context(), domain.Item{
+	item , err := h.ItemRepo.PutItem(c.Request().Context(), domain.Item {
 		Name:        req.Name,
 		CategoryID:  req.CategoryID,
 		UserID:      userID,
@@ -753,12 +753,12 @@ func (h *Handler) PutItem(c echo.Context) error {
 		Description: req.Description,
 		Image:       blob.Bytes(),
 		Status:      domain.ItemStatusInitial,
-	})
+	},itemID)
 	
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-	fmt.Printf(req.Name,req.CategoryID,req.Description,domain.ItemStatusInitial)
+	fmt.Printf(req.Name,req.CategoryID,userID,req.Description,domain.ItemStatusInitial)
 
 	return c.JSON(http.StatusOK, addItemResponse{ID: int64(item.ID)})
 }

@@ -68,12 +68,14 @@ export const EditItem = () => {
 
     // fetcher(`/items/${item_id}`, {
     //   method: "PUT",
-    //   body: data,
     //   headers: {
-    //     "Content-Type": "application/json",
     //     Accept: "application/json",
+    //     "Content-Type": "application/json",
     //     Authorization: `Bearer ${cookies.token}`,
     //   },
+    //   body: JSON.stringify({
+    //     item_id: item_id,
+    //   }),
     // })
     //   .then((_) => {
     //     toast.success("Item added successfully!");
@@ -81,10 +83,10 @@ export const EditItem = () => {
     //   .catch((error: Error) => {
     //     toast.error(error.message);
     //     console.error("PUT error:", error);
-    //   });
+    //   });}
 
-    fetcher<{ id: number }>(`/items`, {
-      method: "POST",
+    fetcher<{ id: number }>(`/items/${item_id}`, {
+      method: "PUT",
       body: data,
       headers: {
         Authorization: `Bearer ${cookies.token}`,
@@ -100,8 +102,8 @@ export const EditItem = () => {
   };
 
   const sell = (itemID: number) =>
-    fetcher(`/items/${itemID}`, {
-      method: "PUT",
+    fetcher(`/sell`, {
+      method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -120,7 +122,7 @@ export const EditItem = () => {
       });
 
 
-
+    
 
   const fetchCategories = () => {
     fetcher<Category[]>(`/items/categories`, {
