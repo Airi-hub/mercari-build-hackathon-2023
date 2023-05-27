@@ -83,6 +83,14 @@ type addItemRequest struct {
 	Description string `form:"description"`
 }
 
+type putItemRequest struct {
+	Name        string `form:"name"`
+	CategoryID  int64  `form:"category_id"`
+	Price       int64  `form:"price"`
+	Description string `form:"description"`
+}
+
+
 type addItemResponse struct {
 	ID int64 `json:"id"`
 }
@@ -685,3 +693,75 @@ func getEnv(key string, defaultValue string) string {
 	}
 	return value
 }
+
+func (h *Handler) PutItem(c echo.Context) error {
+	ctx := c.Request().Context()
+	// //itemID, _ := strconv.ParseInt(c.Param("itemID"), 10, 64) //use ParseInt instead of atoi
+
+	req := new(putItemRequest)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+	
+	//validation  (whether name is too long)
+	if utf8.RuneCountInString(req.Name) > 50 {
+		return echo.NewHTTPError(http.StatusBadRequest, "ItemName must be within 50 characters")
+	}
+	//validation  (whether price is minus)
+	if req.Price <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "Price must be greater than 0")
+	}
+
+	var userID int64=13
+
+	// userID, err := getUserID(c)
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+	// }
+	file, err := c.FormFile("image")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	src, err := file.Open()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+	defer src.Close()
+
+	var dest []byte
+	blob := bytes.NewBuffer(dest)
+	// TODO: pass very big file
+	// http.StatusBadRequest(400)
+	if _, err := io.Copy(blob, src); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	_, err = h.ItemRepo.GetCategory(ctx, req.CategoryID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid categoryID")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	item , err := h.ItemRepo.AddItem(c.Request().Context(), domain.Item{
+		Name:        req.Name,
+		CategoryID:  req.CategoryID,
+		UserID:      userID,
+		Price:       req.Price,
+		Description: req.Description,
+		Image:       blob.Bytes(),
+		Status:      domain.ItemStatusInitial,
+	})
+	
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+	fmt.Printf(req.Name,req.CategoryID,req.Description,domain.ItemStatusInitial)
+
+	return c.JSON(http.StatusOK, addItemResponse{ID: int64(item.ID)})
+}
+
+
+
