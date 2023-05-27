@@ -6,8 +6,8 @@ import { MerComponent } from "../MerComponent";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { fetcher } from "../../helper";
+import { useParams, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
 
 interface Item {
   id: number;
@@ -15,12 +15,13 @@ interface Item {
   price: number;
   category_name: string;
 }
-export const Home = () => {
+export const SearchResults = () => {
+  const currentURL = window.location.href;
   const [cookies] = useCookies(["userID", "token"]);
   const [items, setItems] = useState<Item[]>([]);
-
+  var name = currentURL.substring(currentURL.indexOf("=") + 1);
   const fetchItems = () => {
-    fetcher<Item[]>(`/items`, {
+    fetcher<Item[]>(`/search?name=${name}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +55,7 @@ export const Home = () => {
   );
 
   const navigate = useNavigate();
-  const [keyword, setKeyword] = useState("");
+  var [keyword, setKeyword] = useState("");
   const itemListPage = (
     <MerComponent>
       <div>

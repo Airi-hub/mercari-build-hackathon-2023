@@ -114,6 +114,13 @@ type loginResponse struct {
 	Token string `json:"token"`
 }
 
+type searchItem struct {
+	ID           int32  `json:"id"`
+	Name         string `json:"name"`
+	Price        int64  `json:"price"`
+	CategoryName string `json:"category_name"`
+}
+
 type Handler struct {
 	DB       *sql.DB
 	UserRepo db.UserRepository
@@ -126,6 +133,43 @@ func GetSecret() string {
 	}
 	return "secret-key"
 }
+
+
+// func (h *Handler) SearchItemByName(c echo.Context) error {
+// 	// keyword := c.QueryParam("keyword")
+// 	// item, err := h.ItemRepo.SearchItemByName(c.Request().Context(), keyword)
+//     return c.JSON(http.StatusOK, InitializeResponse{Message: "Success"})
+// }
+
+
+func (h *Handler) SearchItemByName(c echo.Context) error {
+	ctx := c.Request().Context()
+	keyword := c.QueryParam("name")
+
+	items, err := h.ItemRepo.SearchItemByName(ctx, keyword)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return echo.NewHTTPError(http.StatusNotFound, "not found handling")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	var res []searchItem
+	for _, item := range items {
+		cats, err := h.ItemRepo.GetCategories(ctx)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+		for _, cat := range cats {
+			if cat.ID == item.CategoryID {
+				res = append(res, searchItem{ID: item.ID, Name: item.Name, Price: item.Price, CategoryName: cat.Name})
+			}
+		}
+	}	
+	return c.JSON(http.StatusOK, res)
+}
+
 
 func (h *Handler) Initialize(c echo.Context) error {
 	err := os.Truncate(logFile, 0)
