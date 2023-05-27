@@ -66,6 +66,7 @@ type ItemRepository interface {
 	GetCategories(ctx context.Context) ([]domain.Category, error)
 	UpdateItemStatus(ctx context.Context, id int32, status domain.ItemStatus) error
 	GetItemStatus(ctx context.Context, id int32) (domain.ItemStatus, error)
+	SearchItemByName(ctx context.Context, keyword string) ([]domain.Item, error)
 }
 
 type ItemDBRepository struct {
@@ -197,3 +198,26 @@ func (r *ItemDBRepository) GetCategories(ctx context.Context) ([]domain.Category
 	}
 	return cats, nil
 }
+
+func (r *ItemDBRepository) SearchItemByName(ctx context.Context, keyword string) ([]domain.Item, error) {
+	rows,err := r.QueryContext(ctx, "SELECT * FROM items WHERE items.name LIKE ?", "%"+keyword+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []domain.Item
+	for rows.Next() {
+		var item domain.Item
+		if err := rows.Scan(&item.ID, &item.Name, &item.Price, &item.Description, &item.CategoryID, &item.UserID, &item.Image, &item.Status, &item.CreatedAt, &item.UpdatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, item)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+
+

@@ -83,6 +83,7 @@ func run(ctx context.Context) int {
 	e.GET("/items/:itemID", h.GetItem)
 	e.GET("/items/:itemID/image", h.GetImage)
 	e.GET("/items/categories", h.GetCategories)
+	e.GET("/search", h.SearchItemByName)
 	e.POST("/register", h.Register)
 	e.POST("/login", h.Login)
 
@@ -96,6 +97,7 @@ func run(ctx context.Context) int {
 	l.GET("/balance", h.GetBalance)
 	l.POST("/balance", h.AddBalance)
 	l.POST("/items/new_category", h.AddCategory)
+	
 	// Start server
 	go func() {
 		if err := e.Start(":9000"); err != nil && err != http.ErrServerClosed {
