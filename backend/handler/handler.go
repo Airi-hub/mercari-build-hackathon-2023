@@ -332,7 +332,7 @@ func (h *Handler) Sell(c echo.Context) error {
 	}
 
 	item, err := h.ItemRepo.GetItem(ctx, req.ItemID)
-	if item.Price <= 0{
+	if item.Price <= 0 {
 		return echo.NewHTTPError(http.StatusInternalServerError, "user add minus price")
 	}
 
@@ -498,9 +498,7 @@ func (h *Handler) AddBalance(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	req := new(addBalanceRequest)
-	if req.Balance <= 0{
-		return echo.NewHTTPError(http.StatusBadRequest, "user add minus balance")
-	}
+
 	if err := c.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
@@ -518,6 +516,11 @@ func (h *Handler) AddBalance(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	//0以下の残高を追加しようとする場合
+	if req.Balance <= 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid balance")
 	}
 
 	if err := h.UserRepo.UpdateBalance(ctx, userID, user.Balance+req.Balance); err != nil {
