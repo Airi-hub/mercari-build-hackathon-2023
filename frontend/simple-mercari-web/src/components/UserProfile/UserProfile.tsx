@@ -1,28 +1,19 @@
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
-import { MerComponent } from "../MerComponent";
-import { ItemList } from "../ItemList";
 
 import { fetcher, getGetParams, getPostParams, handleGetError, handlePostError } from "../../helper";
-
-
-interface Item {
-  id: number;
-  name: string;
-  price: number;
-  category_name: string;
-}
+import { ItemList } from "../ItemList";
 
 export const UserProfile: React.FC = () => {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<ItemShort[]>([]);
   const [balance, setBalance] = useState<number>();
   const [addedbalance, setAddedBalance] = useState<number>();
   const [cookies] = useCookies(["token"]);
   const params = useParams();
 
   const fetchItems = async () => {
-    const items = await fetcher<Item[]>(`/users/${params.id}/items`, getGetParams(cookies.token)).catch(handleGetError)
+    const items = await fetcher<ItemShort[]>(`/users/${params.id}/items`, getGetParams(cookies.token)).catch(handleGetError)
     if (items) setItems(items)
   };
 
@@ -67,7 +58,7 @@ export const UserProfile: React.FC = () => {
 
           <div>
             <h2>Item List</h2>
-            {<UserItemList items={items} />}
+            {<ItemList items={items} edit />}
           </div>
         </div>
       </div>

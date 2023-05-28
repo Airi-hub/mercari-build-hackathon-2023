@@ -57,6 +57,12 @@ code {
   .button-wide {
     @apply w-36
   }
+  .button-icon {
+    @apply m-1 w-8 h-8 text-white bg-theme-600 rounded-md p-1
+  }
+  .button-icon:hover {
+    @apply bg-theme-700
+  }
   .footer-item {
     @apply text-white bg-theme-500 flex gap-1 justify-center items-center cursor-pointer
   }

@@ -1,7 +1,6 @@
 import React, { useContext, useReducer } from "react"
 import { useCookies } from "react-cookie";
 import { fetcher, getPostParams, handlePostError } from "../helper";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Login } from "../components/Login";
 
@@ -29,7 +28,7 @@ export const useAppContext = () => {
 }
 
 export const RequireLoggedInUser = ({ children }: { children: JSX.Element|JSX.Element[] }): JSX.Element => {
-    const [cookies] = useCookies(["userID", "token"]);
+    const [cookies] = useCookies(["token"]);
     return cookies.token ? <>{children}</> : <Login />
 };
 
@@ -42,7 +41,9 @@ const AppContextProvider = ({ children }: { children: JSX.Element|JSX.Element[] 
         }), {
         userID: ""
     });
-    const [_, setCookie, removeCookie] = useCookies(["userID", "token"]);
+    const [_, setCookie, removeCookie] = useCookies(["name", "userID", "token"]);
+    const setCookies = (cookies:{name?:string, userID?:number, token?:string}) => (Object.keys(cookies) as ("name"|"userID"|"token")[]).forEach(key => setCookie(key, cookies[key], { path: '/' }))
+    const removeCookies = (cookies:("name"|"userID"|"token")[]) => cookies.forEach(cookie => removeCookie(cookie, { path: '/' }))
 
     const signup = async (values: KeyValues) => {
         const user = await fetcher<{ id: number; name: string }>(`/register`, getPostParams({
@@ -62,14 +63,16 @@ const AppContextProvider = ({ children }: { children: JSX.Element|JSX.Element[] 
         if (!user) return
         toast.success("Signed in!");
         console.log("POST success:", user.id);
-        setCookie("userID", user.id);
-        setCookie("token", user.token);
+        setCookies({
+            name: user.name,
+            userID: user.id,
+            token: user.token
+        });
         dispatch({ userID: user.id });
     };
 
     const logout = () => {
-        removeCookie("userID");
-        removeCookie("token");
+        removeCookies(["name", "userID", "token"]);
         dispatch({ userID: "" });
     };
 

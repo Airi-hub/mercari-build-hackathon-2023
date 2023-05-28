@@ -4,24 +4,11 @@ import { useCookies } from "react-cookie";
 import { MerComponent } from "../MerComponent";
 import { fetcher, fetcherBlob, getGetParams, getPostParams, handleGetError, handlePostError } from "../../helper";
 
-const ItemStatus = {
+const ItemStatuses = {
   ItemStatusInitial: 0,
   ItemStatusOnSale: 1,
   ItemStatusSoldOut: 2,
 } as const;
-
-type ItemStatus = (typeof ItemStatus)[keyof typeof ItemStatus];
-
-interface Item {
-  id: number;
-  name: string;
-  category_id: number;
-  category_name: string;
-  user_id: number;
-  price: number;
-  status: ItemStatus;
-  description: string;
-}
 
 export const ItemDetail = () => {
   const navigate = useNavigate();
@@ -29,6 +16,7 @@ export const ItemDetail = () => {
   const [item, setItem] = useState<Item>();
   const [itemImage, setItemImage] = useState<Blob>();
   const [cookies] = useCookies(["token", "userID"]);
+
 
   const fetchItem = async () => {
     const res = await fetcher<Item>(`/items/${params.id}`, getGetParams()).catch(handleGetError)
@@ -74,7 +62,7 @@ export const ItemDetail = () => {
               <span>Category:</span><span>{item.category_name}</span>
               <span>Description:</span><span>{item.description}</span>
             </div>
-            {item.status == ItemStatus.ItemStatusSoldOut ? (
+            {item.status === ItemStatuses.ItemStatusSoldOut ? (
               <button disabled={true} onClick={onSubmit} className="button">
                 SoldOut
               </button>

@@ -1,8 +1,8 @@
 import React from "react";
-import { Item } from "../Item";
 import { useParams, useNavigate } from "react-router-dom";
+import { Item } from "../Item";
 
-interface Item {
+interface ItemShort {
   id: number;
   name: string;
   price: number;
@@ -10,7 +10,7 @@ interface Item {
 }
 
 interface Prop {
-  items: Item[];
+  items: ItemShort[];
 }
 
 export const UserItemList: React.FC<Prop> = (props) => {

@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
 export const Footer: React.FC = () => {
-  const [cookies] = useCookies(["userID"]);
+  const [cookies] = useCookies(["userID", "token"]);
   const navigate = useNavigate();
 
-  if (!cookies.userID) {
+  if (!cookies.token) {
     return <></>;
   }
-
   return (
     <footer className="w-full p-px grid grid-flow-col justify-stretch gap-px bg-white">
       <div className="footer-item" onClick={() => navigate("/")}>

@@ -9,20 +9,14 @@ import { fetcher } from "../../helper";
 import { useParams, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
-interface Item {
-  id: number;
-  name: string;
-  price: number;
-  category_name: string;
-}
 export const SearchResults = () => {
   var currentURL = window.location.href;
   const [cookies] = useCookies(["userID", "token"]);
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<ItemShort[]>([]);
   var name = currentURL.substring(currentURL.indexOf("=") + 1);
 
   const fetchItems = () => {
-    fetcher<Item[]>(`/search?name=${name}`, {
+    fetcher<ItemShort[]>(`/search?name=${name}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
