@@ -186,6 +186,16 @@ body {
   margin-bottom: 5px;
 }
 
+.product-explain {
+  border-width: 3px; /* 枠線の太さを指定 */
+  border-style: dashed;
+  border-color: white; 
+  border-spacing: 15px;
+  padding: 10px; /* テキストと枠線の間にスペースを作る（必要に応じて設定） */
+  margin-bottom: 5px; /* 下方向のマージンを設定（必要に応じて設定） */
+  font-weight: bold; /* フォントの太さを設定 */
+}
+
 .product-description p {
   white-space: nowrap;
   overflow: hidden;

@@ -81,14 +81,16 @@ export const ItemDetail = () => {
             <div className="product-details">
               <p className="product-price">¥{item.price}</p>
             </div>
-            <div className="product-information">商品の情報</div>
-            <div className="product-description">
-              <p className="product-category">カテゴリー: {item.category_name}</p>
-              <p>
-                {showFullDescription
-                  ? item.description
-                  : formatDescription(item.description)}
-              </p>
+            <div className = "product-explain">
+              <div className="product-information">Item information</div>
+              <div className="product-description">
+                <p className="product-category">Category: {item.category_name}</p>
+                <p>
+                  {showFullDescription
+                    ? item.description
+                    : formatDescription(item.description)}
+                </p>
+              </div>
             </div>
 
             </div>
