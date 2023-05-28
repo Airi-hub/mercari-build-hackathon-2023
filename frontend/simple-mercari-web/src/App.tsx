@@ -4,6 +4,8 @@ import { Home } from "./components/Home";
 import { ItemDetail } from "./components/ItemDetail";
 import { UserProfile } from "./components/UserProfile";
 import { Listing } from "./components/Listing";
+import { SearchResults } from "./components/SearchResults";
+import { EditItem } from "./components/EditItem";
 import "./App.css";
 import { Header } from "./components/Header/Header";
 import { ToastContainer } from 'react-toastify';
@@ -12,6 +14,8 @@ import AppContextProvider, { RequireLoggedInUser } from "./contexts/AppContext";
 import { Footer } from "./components/Footer/Footer";
 
 export const App: React.VFC = () => {
+
+  
   return <>
     <ToastContainer position="bottom-center" />
     <div className="h-full grid grid-rows-frame">
@@ -35,4 +39,5 @@ export const App: React.VFC = () => {
       </AppContextProvider>
     </div>
   </>
+
 };

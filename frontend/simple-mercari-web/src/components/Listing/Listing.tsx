@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { MerComponent } from "../MerComponent";
 import { toast } from "react-toastify";
+
 import { fetcher, getGetParams, getPostParams, handleGetError, handlePostError } from "../../helper";
+
 
 interface Category {
   id: number;
   name: string;
 }
-
 type formDataType = {
   name: string;
   category_id: number;
@@ -16,7 +17,6 @@ type formDataType = {
   description: string;
   image: string | File;
 };
-
 export const Listing: React.FC = () => {
   const initialState = {
     name: "",
@@ -28,24 +28,23 @@ export const Listing: React.FC = () => {
   const [values, setValues] = useState<formDataType>(initialState);
   const [categories, setCategories] = useState<Category[]>([]);
   const [cookies] = useCookies(["token", "userID"]);
-
   //Add the new state here
+
   const [newCategoryName, setNewCategoryName] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement|HTMLSelectElement>) => {
     setValues(values => ({
+
       ...values,
       [event.target.name]: event.target.value,
     }));
   };
-
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValues({
       ...values,
       [event.target.name]: event.target.files![0],
     });
   };
-
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData();
@@ -54,7 +53,6 @@ export const Listing: React.FC = () => {
     data.append("price", values.price.toString());
     data.append("description", values.description);
     data.append("image", values.image);
-
     fetcher<{ id: number }>(`/items`, {
       method: "POST",
       body: data,
@@ -70,6 +68,7 @@ export const Listing: React.FC = () => {
         console.error("POST error:", error);
       });
   };
+
 
   const sell = async (itemID: number) => {
     const response = await fetcher(`/sell`, getPostParams({
@@ -91,11 +90,12 @@ export const Listing: React.FC = () => {
       setCategories(categories => [...categories, newCategory]); // Add the new category to the list
       setNewCategoryName(""); // Clear the new category name field
     }
-  };
 
+  };
   useEffect(() => {
     fetchCategories();
   }, []);
+
 
   return <form onSubmit={onSubmit} className="component">
         <input
@@ -152,4 +152,5 @@ export const Listing: React.FC = () => {
           List this item
         </button>
     </form>
+
 };

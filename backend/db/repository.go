@@ -3,8 +3,11 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"net/http"
 
 	"github.com/Airi-hub/mecari-build-hackathon-2023/backend/domain"
+	"github.com/labstack/echo/v4"
 )
 
 type UserRepository interface {
@@ -23,15 +26,36 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (r *UserDBRepository) AddUser(ctx context.Context, user domain.User) (int64, error) {
+	row_ := r.QueryRowContext(ctx, "SELECT MAX(id) FROM users")
+	var id_ sql.NullInt64
+	err_ := row_.Scan(&id_)
+
+	if err_ != nil {
+		// エラー処理
+		return 0, err_
+	} else if !id_.Valid {
+		// MAX(id)がNULLを返した場合の処理
+		id_.Int64 = 0
+		id_.Valid = true
+	}
+
 	if _, err := r.ExecContext(ctx, "INSERT INTO users (name, password) VALUES (?, ?)", user.Name, user.Password); err != nil {
 		return 0, err
 	}
 	// TODO: if other insert query is executed at the same time, it might return wrong id
 	// http.StatusConflict(409) 既に同じIDがあった場合
 	row := r.QueryRowContext(ctx, "SELECT id FROM users WHERE rowid = LAST_INSERT_ROWID()")
-
 	var id int64
-	return id, row.Scan(&id)
+	err := row.Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	if id != id_.Int64+1 {
+		return 0, echo.NewHTTPError(http.StatusConflict, fmt.Sprintf("Conflicted: id is %d, but id_.Int64 is %d", id, id_.Int64))
+	}
+
+	return id, nil
 }
 
 func (r *UserDBRepository) GetUser(ctx context.Context, id int64) (domain.User, error) {
@@ -65,6 +89,9 @@ type ItemRepository interface {
 	GetCategory(ctx context.Context, id int64) (domain.Category, error)
 	GetCategories(ctx context.Context) ([]domain.Category, error)
 	UpdateItemStatus(ctx context.Context, id int32, status domain.ItemStatus) error
+	GetItemStatus(ctx context.Context, id int32) (domain.ItemStatus, error)
+	SearchItemByName(ctx context.Context, keyword string) ([]domain.Item, error)
+	PutItem(ctx context.Context, item domain.Item, itemID int64) (domain.Item, error)
 }
 
 type ItemDBRepository struct {
@@ -82,6 +109,18 @@ func (r *ItemDBRepository) AddItem(ctx context.Context, item domain.Item) (domai
 	// TODO: if other insert query is executed at the same time, it might return wrong id
 	// http.StatusConflict(409) 既に同じIDがあった場合
 	row := r.QueryRowContext(ctx, "SELECT * FROM items WHERE rowid = LAST_INSERT_ROWID()")
+
+	var res domain.Item
+	return res, row.Scan(&res.ID, &res.Name, &res.Price, &res.Description, &res.CategoryID, &res.UserID, &res.Image, &res.Status, &res.CreatedAt, &res.UpdatedAt)
+}
+
+func (r *ItemDBRepository) PutItem(ctx context.Context, item domain.Item, itemID int64) (domain.Item, error) {
+	if _, err := r.ExecContext(ctx, "UPDATE items SET name = ?, price = ?, description = ?, category_id = ?, seller_id = ?, status = ? WHERE ID = ?", item.Name, item.Price, item.Description, item.CategoryID, item.UserID, item.Status, itemID); err != nil {
+		return domain.Item{}, err
+	}
+	// TODO: if other insert query is executed at the same time, it might return wrong id
+	// http.StatusConflict(409) 既に同じIDがあった場合
+	row := r.QueryRowContext(ctx, "SELECT * FROM items WHERE ID = ?", itemID)
 
 	var res domain.Item
 	return res, row.Scan(&res.ID, &res.Name, &res.Price, &res.Description, &res.CategoryID, &res.UserID, &res.Image, &res.Status, &res.CreatedAt, &res.UpdatedAt)
@@ -161,6 +200,13 @@ func (r *ItemDBRepository) UpdateItemStatus(ctx context.Context, id int32, statu
 	return nil
 }
 
+func (r *ItemDBRepository) GetItemStatus(ctx context.Context, id int32) (domain.ItemStatus, error) {
+	row := r.QueryRowContext(ctx, "SELECT status FROM items WHERE id = ?", id)
+
+	var status domain.ItemStatus
+	return status, row.Scan(&status)
+}
+
 func (r *ItemDBRepository) GetCategory(ctx context.Context, id int64) (domain.Category, error) {
 	row := r.QueryRowContext(ctx, "SELECT * FROM category WHERE id = ?", id)
 
@@ -187,4 +233,24 @@ func (r *ItemDBRepository) GetCategories(ctx context.Context) ([]domain.Category
 		return nil, err
 	}
 	return cats, nil
+}
+
+func (r *ItemDBRepository) SearchItemByName(ctx context.Context, keyword string) ([]domain.Item, error) {
+	rows, err := r.QueryContext(ctx, "SELECT * FROM items WHERE items.name LIKE ?", "%"+keyword+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []domain.Item
+	for rows.Next() {
+		var item domain.Item
+		if err := rows.Scan(&item.ID, &item.Name, &item.Price, &item.Description, &item.CategoryID, &item.UserID, &item.Image, &item.Status, &item.CreatedAt, &item.UpdatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, item)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

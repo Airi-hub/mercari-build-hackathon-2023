@@ -3,7 +3,9 @@ import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 import { MerComponent } from "../MerComponent";
 import { ItemList } from "../ItemList";
+
 import { fetcher, getGetParams, getPostParams, handleGetError, handlePostError } from "../../helper";
+
 
 interface Item {
   id: number;
@@ -65,7 +67,7 @@ export const UserProfile: React.FC = () => {
 
           <div>
             <h2>Item List</h2>
-            {<ItemList items={items} />}
+            {<UserItemList items={items} />}
           </div>
         </div>
       </div>

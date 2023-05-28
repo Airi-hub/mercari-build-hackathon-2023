@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { fetcher } from "../../helper";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 interface Item {
   id: number;
@@ -40,6 +41,7 @@ export const Home = () => {
     fetchItems();
   }, []);
 
+
   const itemListPage = (
     <div className="component">
       <ItemList items={items} />
@@ -47,4 +49,5 @@ export const Home = () => {
   );
 
   return <>{itemListPage}</>;
+
 };
