@@ -74,7 +74,6 @@ type getCategoriesResponse struct {
 
 type sellRequest struct {
 	ItemID int32 `json:"item_id"`
-	UserID int64 `json:"user_id"`
 }
 
 type addItemRequest struct {
@@ -100,8 +99,6 @@ type putItemResponse struct {
 
 type addCategoryRequest struct {
 	Name string `form:"name"`
-	UserID int64  `json:"user_id"`
-	ItemID int32  `form:"item_id"`
 }
 
 type addCategoryResponse struct {
@@ -368,66 +365,43 @@ func (h *Handler) AddCategory(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-
 	return c.JSON(http.StatusOK, addCategoryResponse{ID: int64(category.ID)})
+}
 
-	// TODO: check req.UserID and item.UserID <--checked
-	// http.StatusPreconditionFailed(412)
-	// TODO: only update when status is initial <--checked
+func (h *Handler) Sell(c echo.Context) error {
+	ctx := c.Request().Context()
+	req := new(sellRequest)
+
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	item, err := h.ItemRepo.GetItem(ctx, req.ItemID)
+	if item.Price <= 0 {
+		return echo.NewHTTPError(http.StatusInternalServerError, "user add minus price")
+	}
+
+	// TODO: not found handling <- checked
 	// http.StatusPreconditionFailed(412)
 
-	// リクエストユーザーIDとアイテムユーザーIDが一致するかどうか確認
-	item, err := h.ItemRepo.GetItem(c.Request().Context(), req.ItemID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return echo.NewHTTPError(http.StatusPreconditionFailed, "not found handling")
+		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	if req.UserID != item.UserID {
-		return echo.NewHTTPError(http.StatusPreconditionFailed, "リクエストのユーザーIDがアイテムのユーザーIDと一致しません")
+	// TODO: check req.UserID and item.UserID
+	// http.StatusPreconditionFailed(412)
+	// TODO: only update when status is initial
+	// http.StatusPreconditionFailed(412)
+	if err := h.ItemRepo.UpdateItemStatus(ctx, item.ID, domain.ItemStatusOnSale); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	// 初期状態の場合のみ、アイテムのステータスを更新
-	if item.Status != domain.ItemStatusInitial {
-		return echo.NewHTTPError(http.StatusPreconditionFailed, "アイテムのステータスが初期状態ではありません")
-	}
+	return c.JSON(http.StatusOK, "successful")
+}
 
-	return c.JSON(http.StatusOK, addCategoryResponse{ID: int64(category.ID)})
-   }
-
-
-func (h *Handler) Sell(c echo.Context) error {
-		ctx := c.Request().Context()
-		req := new(sellRequest)
-	
-		if err := c.Bind(req); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, err)
-		}
-	
-		item, err := h.ItemRepo.GetItem(ctx, req.ItemID)
-		// TODO: not found handling
-		// http.StatusPreconditionFailed(412)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
-		}
-	
-		// TODO: check req.UserID and item.UserID <--checked
-		// http.StatusPreconditionFailed(412)
-		// TODO: only update when status is initial <--checked
-		// http.StatusPreconditionFailed(412)
-	
-		// リクエストユーザーIDとアイテムユーザーIDが一致するかどうか確認
-		if req.UserID != item.UserID {
-			return echo.NewHTTPError(http.StatusPreconditionFailed, "リクエストのユーザーIDがアイテムのユーザーIDと一致しません")
-		}
-	
-		// 初期状態の場合のみ、アイテムのステータスを更新
-		if item.Status != domain.ItemStatusInitial {
-			return echo.NewHTTPError(http.StatusPreconditionFailed, "アイテムのステータスが初期状態ではありません")
-		}
-	
-		return c.JSON(http.StatusOK, "successful")
-	}
-	
 func (h *Handler) GetOnSaleItems(c echo.Context) error {
 	ctx := c.Request().Context()
 
