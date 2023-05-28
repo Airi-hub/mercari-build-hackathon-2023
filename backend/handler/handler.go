@@ -74,7 +74,6 @@ type getCategoriesResponse struct {
 
 type sellRequest struct {
 	ItemID int32 `json:"item_id"`
-	//UserID int64 `json:"user_id"` //henkou
 }
 
 type addItemRequest struct {
@@ -100,8 +99,6 @@ type putItemResponse struct {
 
 type addCategoryRequest struct {
 	Name string `form:"name"`
-	//UserID int64  `json:"user_id"` //henkou
-	//ItemID int32  `form:"item_id"` //henkou
 }
 
 type addCategoryResponse struct {
