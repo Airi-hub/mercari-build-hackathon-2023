@@ -203,6 +203,11 @@ func (h *Handler) Register(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Name cannot be empty")
 	}
 
+	//validation  (whether name is too long) <=NEW
+	if utf8.RuneCountInString(req.Name) > 50 {
+		return echo.NewHTTPError(http.StatusBadRequest, "UserName must be within 50 characters")
+	}
+
 	//validation(whether password is empty)
 	if req.Password == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "Password cannot be empty")
@@ -299,6 +304,23 @@ func (h *Handler) AddItem(c echo.Context) error {
 	//validation  (whether price is minus)
 	if req.Price <= 0 {
 		return echo.NewHTTPError(http.StatusBadRequest, "Price must be greater than 0")
+	}
+
+	// //validation  (whether description is too long)
+	// if utf8.RuneCountInString(req.Description) > 50 {
+	// 	return echo.NewHTTPError(http.StatusBadRequest, "ItemName must be within 50 characters")
+	// }
+
+	//validation  (whether description is too long)
+	if utf8.RuneCountInString(req.Description) > 100 {
+		runeCount := 0
+		for i := range req.Description {
+			if runeCount == 50 {
+				req.Description = req.Description[:i]
+				break
+			}
+			runeCount++
+		}
 	}
 
 	userID, err := getUserID(c)
