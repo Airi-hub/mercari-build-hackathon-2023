@@ -7,7 +7,7 @@ module.exports = {
         theme: {
           50: "#ffffff",
           100:"#b3f3f7",
-          200:"#ffffff",
+          200:"#81e8f1",
           300:"#4cdee9",
           400:"#a17d3e2",
           500:"#0098b0", //category等の文字、した

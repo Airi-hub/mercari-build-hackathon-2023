@@ -29,38 +29,38 @@ export const UserProfile: React.FC = () => {
 
   const onBalanceSubmit = async () => {
     const res = await fetcher(`/balance`, getPostParams({
-        balance: addedbalance,
-      }, cookies.token)).catch(handlePostError)
-    window.location.reload()
+      balance: addedbalance,
+    }, cookies.token)).catch(handlePostError)
+    if (res) window.location.reload()
   };
 
   return (
-      <div className="component">
-        <div>
-          <div className="border border-white rounded-md p-2 bg-theme-700 flex flex-col gap-2">
-            <h2>
-              <span>Balance: {balance}</span>
-            </h2>
-            <input
-              className="input"
-              type="number"
-              name="balance"
-              placeholder="0"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setAddedBalance(Number(e.target.value));
-              }}
-              required
-            />
-            <button onClick={onBalanceSubmit} className="button button-wide">
-              Add balance
-            </button>
-          </div>
+    <div className="component">
+      <div>
+        <div className="border border-white rounded-md p-2 bg-theme-700 flex flex-col gap-2">
+          <h2>
+            <span>Balance: {balance}</span>
+          </h2>
+          <input
+            className="input"
+            type="number"
+            name="balance"
+            placeholder="0"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setAddedBalance(Number(e.target.value));
+            }}
+            required
+          />
+          <button onClick={onBalanceSubmit} className="button button-wide">
+            Add balance
+          </button>
+        </div>
 
-          <div>
-            <h2>Item List</h2>
-            {<ItemList items={items} edit />}
-          </div>
+        <div>
+          <h2>Item List</h2>
+          {<ItemList items={items} edit />}
         </div>
       </div>
+    </div>
   );
 };

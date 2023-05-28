@@ -52,6 +52,7 @@ export const Item: React.FC<{ item: ItemShort, edit?:boolean }> = ({ item, edit 
         alt={item.name}
         height={300}
         width={300}
+        style={{margin:'0px'}}
         onClick={() => navigate(`/${edit ? 'edit' : 'item'}/${item.id}`)}
       />
       <div>
