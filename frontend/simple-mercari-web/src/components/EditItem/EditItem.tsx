@@ -73,34 +73,34 @@ export const EditItem = () => {
         Authorization: `Bearer ${cookies.token}`,
       },
     })
-      .then((res) => {
-        sell(res.id);
-      })
+      // .then((res) => {
+      //   sell(res.id);
+      // })
       .catch((error: Error) => {
         toast.error(error.message);
         console.error("POST error:", error);
       });
   };
 
-  const sell = (itemID: number) =>
-    fetcher(`/sell`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${cookies.token}`,
-      },
-      body: JSON.stringify({
-        item_id: itemID,
-      }),
-    })
-      .then((_) => {
-        toast.success("Item added successfully!");
-      })
-      .catch((error: Error) => {
-        toast.error(error.message);
-        console.error("POST error:", error);
-      });
+  // const sell = (itemID: number) =>
+  //   fetcher(`/sell`, {
+  //     method: "POST",
+  //     headers: {
+  //       Accept: "application/json",
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${cookies.token}`,
+  //     },
+  //     body: JSON.stringify({
+  //       item_id: itemID,
+  //     }),
+  //   })
+  //     .then((_) => {
+  //       toast.success("Item added successfully!");
+  //     })
+  //     .catch((error: Error) => {
+  //       toast.error(error.message);
+  //       console.error("POST error:", error);
+  //     });
 
 
 
