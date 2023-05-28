@@ -1,0 +1,17 @@
+.price-image-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .price-tag {
+    position: absolute;
+    bottom: 40px; /* 上方向からのオフセットを bottom に変更 */
+    left: 0px;
+    color: #fff;
+    font-size: 25px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 5px;
+    border-top-right-radius: 10px; /* 右上の角を丸める */
+    border-bottom-right-radius: 10px; /* 右下の角を丸める */
+    width: auto;
+  }

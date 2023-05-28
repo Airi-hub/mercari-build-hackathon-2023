@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { fetcherBlob } from "../../helper";
+import './PriceImage.css'; // CSSファイルのインポート
+
 
 interface Item {
   id: number;
@@ -10,10 +12,22 @@ interface Item {
   category_name: string;
 }
 
+interface PriceImageProps {
+  price: string;
+}
+
 export const Item: React.FC<{ item: Item }> = ({ item }) => {
   const navigate = useNavigate();
   const [itemImage, setItemImage] = useState<string>("");
   const [cookies] = useCookies(["token"]);
+
+  const PriceImage: React.FC<PriceImageProps> = ({price }) => {
+    return (
+      <div className="price-image-container">
+        <div className="price-tag">{price}</div>
+      </div>
+    );
+  };
 
   async function getItemImage(itemId: number): Promise<Blob> {
     return await fetcherBlob(`/items/${itemId}/image`, {
@@ -45,10 +59,11 @@ export const Item: React.FC<{ item: Item }> = ({ item }) => {
         width={300}
         onClick={() => navigate(`/item/${item.id}`)}
       />
+      <div>
+        <PriceImage price={`¥${item.price.toFixed(0)}`}/>
+      </div>
       <p>
         <span>Category: {item.category_name}</span>
-        <br />
-        <span>Price: {item.price}</span>
         <br />
       </p>
     </div>
