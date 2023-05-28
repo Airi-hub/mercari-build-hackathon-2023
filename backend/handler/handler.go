@@ -783,7 +783,7 @@ func (h *Handler) PutItem(c echo.Context) error {
 		Price:       req.Price,
 		Description: req.Description,
 		//Image:       blob.Bytes(),
-		Status:      domain.ItemStatusInitial,
+		//Status:      domain.ItemStatusInitial,
 	}, itemID)
 
 	if err != nil {
