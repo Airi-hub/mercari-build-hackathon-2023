@@ -31,7 +31,7 @@ export const App: React.VFC = () => {
                   <Route path="/item/:id" element={<ItemDetail />} />
                   <Route path="/user/:id" element={<UserProfile />} />
                   <Route path="/sell" element={<Listing />} />
-                  <Route path="/search/:name" element={<Home />} />
+                  <Route path="/search" element={<Home />} />
                   <Route path="/edit/:id" element={<Listing edit />} />
                   <Route path="/category/:id" element={<Category />} />
                 </Routes>
