@@ -13,18 +13,16 @@ export const Home = () => {
   const fetchItems = async () => {
     const data = await fetcher<ItemShort[]>(`/items`, getGetParams()).catch(handleGetError)
     if (data) {
-        console.log("GET success:", data);
-        setItems(data);
+      console.log("GET success:", data);
+      setItems(data);
     }
   };
 
   const fetchCategoryItems = async () => {
-    console.log(id)
     const data = await fetcher<Item[]>(`/category/${id}`, getGetParams()).catch(handleGetError)
-    console.log(data)
     if (data) {
-        console.log("GET success:", data);
-        setItems(data);
+      console.log("GET success:", data);
+      setItems(data);
     } else if (data === null) {
       console.log("GET returned no data")
       setItems([])
@@ -34,8 +32,8 @@ export const Home = () => {
   const searchItems = async () => {
     const data = await fetcher<ItemShort[]>(`/search?name=${name}`, getGetParams()).catch(handleGetError)
     if (data) {
-        console.log("GET success:", data);
-        setItems(data);
+      console.log("GET success:", data);
+      setItems(data);
     }
   };
 
@@ -43,25 +41,25 @@ export const Home = () => {
     if (name) searchItems();
     else if (id) fetchCategoryItems();
     else fetchItems();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, id]);
 
-  const categories = [ "all", "food", "fashion","furniture", "book"];
-  const itemListPage = (
+  const categories = ["all", "food", "fashion", "furniture", "book"];
+  const itemListPage = <div className="flex flex-col items-center">
+    <div className="tab-group">
+      <ul className="flex flex-wrap -mb-px">
+        {categories.map((category, i) => <li key={category} className="mr-2">
+          <Link to={`/category/${i}`} className={`tab${Number(id) === i ? ' tab-active' : ''}`}>
+            {category}
+          </Link>
+        </li>)}
+      </ul>
+    </div>
     <div className="component">
-      <div className="tab-group">
-          <ul className="flex flex-wrap -mb-px">
-            {categories.map((category, i) => <li key={category} className="mr-2">
-                  <Link to={`/category/${i}`} className={`tab${Number(id) === i ? ' tab-active' : ''}`}>
-                      {category}
-                  </Link>
-              </li>)}
-          </ul>
-      </div>
       <ItemList items={items} />
     </div>
-  );
+  </div>;
 
-  return <>{itemListPage}</>;
+return <>{itemListPage}</>;
 
 };

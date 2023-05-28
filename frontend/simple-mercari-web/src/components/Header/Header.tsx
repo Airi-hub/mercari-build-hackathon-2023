@@ -24,7 +24,7 @@ export const Header: React.FC = () => {
       <b className='text-white'>Simple Mercari</b>
     </p>
     <div className='flex items-center'>
-      <input className="input" type="text" value={name} onChange={handleChange} /><Link to={`/search?name=${name}`}><SearchIcon /></Link>
+      <input className="input" type="text" placeholder="Search" value={name} onChange={handleChange} /><Link to={`/search?name=${name}`}><SearchIcon /></Link>
       <span className='px-4'>{cookies.token && cookies.name ? `${cookies.name}` : ''}</span>
       {cookies.token && <button className='text-theme-500 hover:text-theme-300' onClick={onLogout}>
         Logout
