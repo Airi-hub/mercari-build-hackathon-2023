@@ -90,6 +90,8 @@ type addItemResponse struct {
 
 type addCategoryRequest struct {
 	Name string `form:"name"`
+	UserID int64  `json:"user_id"`
+	ItemID int32  `form:"item_id"`
 }
 
 type addCategoryResponse struct {
@@ -330,6 +332,11 @@ func (h *Handler) AddCategory(c echo.Context) error {
 	// http.StatusPreconditionFailed(412)
 
 	// リクエストユーザーIDとアイテムユーザーIDが一致するかどうか確認
+	item, err := h.ItemRepo.GetItem(c.Request().Context(), req.ItemID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
 	if req.UserID != item.UserID {
 		return echo.NewHTTPError(http.StatusPreconditionFailed, "リクエストのユーザーIDがアイテムのユーザーIDと一致しません")
 	}
@@ -339,9 +346,8 @@ func (h *Handler) AddCategory(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusPreconditionFailed, "アイテムのステータスが初期状態ではありません")
 	}
 
-	return c.JSON(http.StatusOK, "successful")
-
-}
+	return c.JSON(http.StatusOK, addCategoryResponse{ID: int64(category.ID)})
+   }
 
 
 func (h *Handler) Sell(c echo.Context) error {
