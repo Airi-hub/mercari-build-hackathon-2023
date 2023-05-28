@@ -740,24 +740,25 @@ func (h *Handler) PutItem(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
-	file, err := c.FormFile("image")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
 
-	src, err := file.Open()
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
-	defer src.Close()
+	// file, err := c.FormFile("image")
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
+	// }
 
-	var dest []byte
-	blob := bytes.NewBuffer(dest)
-	// TODO: pass very big file
-	// http.StatusBadRequest(400)
-	if _, err := io.Copy(blob, src); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
+	// src, err := file.Open()
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
+	// }
+	// defer src.Close()
+
+	// var dest []byte
+	// blob := bytes.NewBuffer(dest)
+	// // TODO: pass very big file
+	// // http.StatusBadRequest(400)
+	// if _, err := io.Copy(blob, src); err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
+	// }
 
 	_, err = h.ItemRepo.GetCategory(ctx, req.CategoryID)
 	if err != nil {
@@ -773,7 +774,7 @@ func (h *Handler) PutItem(c echo.Context) error {
 		UserID:      userID,
 		Price:       req.Price,
 		Description: req.Description,
-		Image:       blob.Bytes(),
+		//Image:       blob.Bytes(),
 		Status:      domain.ItemStatusInitial,
 	}, itemID)
 
