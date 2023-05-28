@@ -9,7 +9,7 @@ interface Prop {
 export const ItemList: React.FC<Prop> = (props) => {
   return (
 
-    <div className="w-full sm:flex sm:flex-wrap sm:gap-1" >
+    <div className="w-full sm:flex sm:flex-wrap sm:gap-5" >
 
       {props.items &&
         props.items.map((item, i) => {

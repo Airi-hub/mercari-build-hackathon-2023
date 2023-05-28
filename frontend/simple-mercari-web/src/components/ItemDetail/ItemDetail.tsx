@@ -68,6 +68,8 @@ export const ItemDetail = () => {
       <MerComponent condition={() => item !== undefined}>
         {item && itemImage && (
           <div>
+            <div className="product-container">
+            <div className="image-container">
             <img
               height={480}
               width={480}
@@ -75,6 +77,7 @@ export const ItemDetail = () => {
               alt="item"
               onClick={() => navigate(`/item/${item.id}`)}
             />
+            </div>
             <div className="product">
 
             <span><h2 className="product-name">{item.name}</h2></span>
@@ -93,9 +96,6 @@ export const ItemDetail = () => {
                 </p>
               </div>
             </div>
-
-
-            </div>
             {item.status === ItemStatuses.ItemStatusSoldOut ? (
               <button disabled={true} onClick={onSubmit} className="button">
                 SoldOut
@@ -105,6 +105,9 @@ export const ItemDetail = () => {
                 Purchase
               </button>
             )}
+            </div>
+
+            </div>
           </div>
         )}
       </MerComponent>
