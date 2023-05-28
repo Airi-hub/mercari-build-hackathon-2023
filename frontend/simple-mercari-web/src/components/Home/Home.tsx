@@ -2,59 +2,38 @@ import { Login } from "../Login";
 import { Signup } from "../Signup";
 import { ItemList } from "../ItemList";
 import { useCookies } from "react-cookie";
-import { MerComponent } from "../MerComponent";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { fetcher } from "../../helper";
+import { fetcher, getGetParams, handleGetError } from "../../helper";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-interface Item {
-  id: number;
-  name: string;
-  price: number;
-  category_name: string;
-}
 export const Home = () => {
   const [cookies] = useCookies(["userID", "token"]);
-  const [items, setItems] = useState<Item[]>([]);
+  const { name } = useParams()
+  const [items, setItems] = useState<ItemShort[]>([]);
+  console.log(name)
 
-  const fetchItems = () => {
-    fetcher<Item[]>(`/items`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    })
-      .then((data) => {
+  const fetchItems = async () => {
+    const data = await fetcher<ItemShort[]>(`/items`, getGetParams()).catch(handleGetError)
+    if (data) {
         console.log("GET success:", data);
         setItems(data);
-      })
-      .catch((err) => {
-        console.log(`GET error:`, err);
-        toast.error(err.message);
-      });
+    }
+  };
+
+  const searchItems = async () => {
+    const data = await fetcher<ItemShort[]>(`/search?name=${name}`, getGetParams()).catch(handleGetError)
+    if (data) {
+        console.log("GET success:", data);
+        setItems(data);
+    }
   };
 
   useEffect(() => {
-    fetchItems();
-  }, []);
+    if (name) searchItems();
+    else fetchItems();
+  }, [name]);
 
-  const signUpAndSignInPage = (
-    <>
-      <div>
-        <Signup />
-      </div>
-      or
-      <div>
-        <Login />
-      </div>
-    </>
-  );
-
-  const navigate = useNavigate();
-  const [keyword, setKeyword] = useState("");
   const itemListPage = (
     <MerComponent>
       <div>
@@ -82,8 +61,9 @@ export const Home = () => {
         <ItemList items={items} />
       </div>
     </MerComponent>
+
   );
 
+  return <>{itemListPage}</>;
 
-  return <>{cookies.token ? itemListPage : signUpAndSignInPage}</>;
 };

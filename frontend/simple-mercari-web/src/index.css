@@ -1,4 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  height: 100%;
+}
+
 body {
+  height: 100%;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -7,7 +16,54 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  height: 100%;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+@layer utilities {
+  .component {
+    @apply p-4 flex flex-col gap-2 text-theme-500 bg-theme-900 rounded-md
+  }
+  .label {
+    @apply block text-lg text-theme-500
+  }
+  .input {
+    @apply block px-2 py-1 text-black shadow-sm rounded-md border-gray-300
+  }
+  .input:sm {
+    @apply text-sm
+  }
+  .input:focus {
+    @apply ring-theme-500 border-theme-500
+  }
+  .input:disabled {
+    @apply bg-gray-100
+  }
+  .button {
+    @apply inline-flex justify-center py-2 px-4 w-28 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-theme-600
+
+  }
+  .button:focus {
+    @apply outline-none ring-2 ring-offset-2 ring-theme-500
+  }
+  .button:hover {
+    @apply bg-theme-700
+  }
+  .button-wide {
+    @apply w-36
+  }
+  .button-icon {
+    @apply m-1 w-8 h-8 text-white bg-theme-600 rounded-md p-1
+  }
+  .button-icon:hover {
+    @apply bg-theme-700
+  }
+  .footer-item {
+    @apply text-white bg-theme-500 flex gap-1 justify-center items-center cursor-pointer
+  }
 }

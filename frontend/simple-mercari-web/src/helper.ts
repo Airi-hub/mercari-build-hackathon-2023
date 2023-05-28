@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { server } from "./common/constants";
 
 const wrap = <T>(task: Promise<Response>): Promise<T> => {
@@ -67,3 +68,36 @@ export const fetcher = <T = any>(
 export const fetcherBlob = (url: string, init?: RequestInit): Promise<Blob> => {
   return wrapBlob(fetch(server.concat(url), init));
 };
+
+export const getGetParams = (token?:string) => ({
+  method: "GET",
+  headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  },
+})
+
+export const getPostParams = (values: KeyValues, token?:string) => ({
+  method: "POST",
+  headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  body: JSON.stringify(values),
+})
+
+export const handleGetError = (err: any) => {
+  console.log(`POST error:`, err);
+  toast.error(err.message);
+}
+
+export const handlePostError = (err: any) => {
+  console.log(`POST error:`, err);
+  toast.error(err.message);
+}
+
+export const classNames = (...classes: string[]): string => {
+  return classes.filter(Boolean).join(' ')
+}

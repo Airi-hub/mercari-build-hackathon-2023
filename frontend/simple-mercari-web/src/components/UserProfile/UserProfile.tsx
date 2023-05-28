@@ -1,58 +1,25 @@
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
-import { MerComponent } from "../MerComponent";
-import { toast } from "react-toastify";
-import { ItemList } from "../ItemList";
-import { UserItemList } from "../UserItemList";
-import { fetcher } from "../../helper";
 
-interface Item {
-  id: number;
-  name: string;
-  price: number;
-  category_name: string;
-}
+import { fetcher, getGetParams, getPostParams, handleGetError, handlePostError } from "../../helper";
+import { ItemList } from "../ItemList";
 
 export const UserProfile: React.FC = () => {
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<ItemShort[]>([]);
   const [balance, setBalance] = useState<number>();
   const [addedbalance, setAddedBalance] = useState<number>();
   const [cookies] = useCookies(["token"]);
   const params = useParams();
 
-  const fetchItems = () => {
-    fetcher<Item[]>(`/users/${params.id}/items`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${cookies.token}`,
-      },
-    })
-      .then((items) => setItems(items))
-      .catch((err) => {
-        console.log(`GET error:`, err);
-        toast.error(err.message);
-      });
+  const fetchItems = async () => {
+    const items = await fetcher<ItemShort[]>(`/users/${params.id}/items`, getGetParams(cookies.token)).catch(handleGetError)
+    if (items) setItems(items)
   };
 
-  const fetchUserBalance = () => {
-    fetcher<{ balance: number }>(`/balance`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${cookies.token}`,
-      },
-    })
-      .then((res) => {
-        setBalance(res.balance);
-      })
-      .catch((err) => {
-        console.log(`GET error:`, err);
-        toast.error(err.message);
-      });
+  const fetchUserBalance = async () => {
+    const res = await fetcher<{ balance: number }>(`/balance`, getGetParams(cookies.token)).catch(handleGetError)
+    if (res) setBalance(res.balance);
   };
 
   useEffect(() => {
@@ -60,54 +27,40 @@ export const UserProfile: React.FC = () => {
     fetchUserBalance();
   }, []);
 
-  const onBalanceSubmit = () => {
-    fetcher(`/balance`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${cookies.token}`,
-      },
-      body: JSON.stringify({
+  const onBalanceSubmit = async () => {
+    const res = await fetcher(`/balance`, getPostParams({
         balance: addedbalance,
-      }),
-    })
-      .then((_) => window.location.reload())
-      .catch((err) => {
-        console.log(`POST error:`, err);
-        toast.error(err.message);
-      });
+      }, cookies.token)).catch(handlePostError)
+    window.location.reload()
   };
 
   return (
-    <MerComponent>
-      <div className="UserProfile">
+      <div className="component">
         <div>
-          <div>
+          <div className="border border-white rounded-md p-2 bg-theme-700 flex flex-col gap-2">
             <h2>
               <span>Balance: {balance}</span>
             </h2>
             <input
+              className="input"
               type="number"
               name="balance"
-              id="MerTextInput"
               placeholder="0"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setAddedBalance(Number(e.target.value));
               }}
               required
             />
-            <button onClick={onBalanceSubmit} id="MerButton">
+            <button onClick={onBalanceSubmit} className="button button-wide">
               Add balance
             </button>
           </div>
 
           <div>
             <h2>Item List</h2>
-            {<UserItemList items={items} />}
+            {<ItemList items={items} edit />}
           </div>
         </div>
       </div>
-    </MerComponent>
   );
 };

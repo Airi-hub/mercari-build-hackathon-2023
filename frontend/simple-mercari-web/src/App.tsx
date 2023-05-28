@@ -11,11 +11,10 @@ import "./App.css";
 import { Header } from "./components/Header/Header";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AppContextProvider, { RequireLoggedInUser } from "./contexts/AppContext";
+import { Footer } from "./components/Footer/Footer";
 
 export const App: React.VFC = () => {
-  return (
-    <>
-      <ToastContainer position="bottom-center"/>
 
       <BrowserRouter>
         <div className="MerComponent">
@@ -33,6 +32,7 @@ export const App: React.VFC = () => {
       </BrowserRouter>
     </>
   );
+
 };
 
 

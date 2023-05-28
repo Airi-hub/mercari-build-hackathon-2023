@@ -282,6 +282,9 @@ func (h *Handler) Login(c echo.Context) error {
 }
 
 func (h *Handler) AddItem(c echo.Context) error {
+
+	maxSize := int64(1 * 1024 * 1024) //1MB in bytes
+
 	// TODO: validation <-checked by Kurotaka
 	// http.StatusBadRequest(400)
 	ctx := c.Request().Context()
@@ -308,6 +311,11 @@ func (h *Handler) AddItem(c echo.Context) error {
 	file, err := c.FormFile("image")
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	// Check the file size
+	if file.Size > maxSize {
+		return echo.NewHTTPError(http.StatusBadRequest, "Image file size must be 1MB or less")
 	}
 
 	src, err := file.Open()
@@ -740,24 +748,25 @@ func (h *Handler) PutItem(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
-	file, err := c.FormFile("image")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
 
-	src, err := file.Open()
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
-	defer src.Close()
+	// file, err := c.FormFile("image")
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
+	// }
 
-	var dest []byte
-	blob := bytes.NewBuffer(dest)
-	// TODO: pass very big file
-	// http.StatusBadRequest(400)
-	if _, err := io.Copy(blob, src); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
-	}
+	// src, err := file.Open()
+	// if err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
+	// }
+	// defer src.Close()
+
+	// var dest []byte
+	// blob := bytes.NewBuffer(dest)
+	// // TODO: pass very big file
+	// // http.StatusBadRequest(400)
+	// if _, err := io.Copy(blob, src); err != nil {
+	// 	return echo.NewHTTPError(http.StatusInternalServerError, err)
+	// }
 
 	_, err = h.ItemRepo.GetCategory(ctx, req.CategoryID)
 	if err != nil {
@@ -773,7 +782,7 @@ func (h *Handler) PutItem(c echo.Context) error {
 		UserID:      userID,
 		Price:       req.Price,
 		Description: req.Description,
-		Image:       blob.Bytes(),
+		//Image:       blob.Bytes(),
 		Status:      domain.ItemStatusInitial,
 	}, itemID)
 
