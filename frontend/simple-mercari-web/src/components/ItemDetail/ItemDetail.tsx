@@ -33,10 +33,10 @@ export const ItemDetail = () => {
   };
 
   const onSubmit = async (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    await fetcher<Item[]>(`/purchase/${params.id}`, getPostParams({
+    const res = await fetcher<Item[]>(`/purchase/${params.id}`, getPostParams({
       user_id: Number(cookies.userID),
     }, cookies.token)).catch(handlePostError)
-    window.location.reload()
+    if (res) window.location.reload()
   };
 
   useEffect(() => {

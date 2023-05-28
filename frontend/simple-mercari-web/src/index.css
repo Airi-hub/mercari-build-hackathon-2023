@@ -72,7 +72,7 @@ code {
     @apply text-sm font-medium text-center text-theme-500 border-b border-theme-200
   }
   .tab {
-    @apply inline-block p-4 border-b-2 border-transparent rounded-t-lg
+    @apply -mt-4 inline-block align-middle p-4 border-b-2 border-transparent rounded-t-lg
   }
   .tab:hover {
     @apply text-theme-300 border-theme-300
