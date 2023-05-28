@@ -68,7 +68,8 @@ export const ItemDetail = () => {
               onClick={() => navigate(`/item/${item.id}`)}
             />
             <div className="grid grid-cols-2">
-              <span>Item Name:</span><span>{item.name}</span>
+              <h1 className=""></h1>
+              {/* <span>Item Name:</span><span>{item.name}</span> */}
               <span>Price:</span><span>{item.price}</span>
               <span>UserID:</span><span>{item.user_id}</span>
               <span>Category:</span><span>{item.category_name}</span>
