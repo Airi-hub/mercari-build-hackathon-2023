@@ -32,8 +32,6 @@ export const Listing: React.FC<{ edit?: boolean }> = ({ edit }) => {
   const [cookies] = useCookies(["token", "userID"]);
   //Add the new state here
 
-  const [newCategoryName, setNewCategoryName] = useState("");
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setValues(values => ({
 
@@ -108,16 +106,6 @@ export const Listing: React.FC<{ edit?: boolean }> = ({ edit }) => {
     }
   };
 
-  const addNewCategory = async () => {
-    const newCategory = await fetcher(`/items/new_category`, getPostParams({
-      name: newCategoryName,
-    }, cookies.token)).catch(handlePostError)
-    if (newCategory) {
-      setCategories(categories => [...categories, newCategory]); // Add the new category to the list
-      setNewCategoryName(""); // Clear the new category name field
-    }
-
-  };
   useEffect(() => {
     fetchCategories();
     if (edit) fetchItem();
@@ -140,16 +128,6 @@ export const Listing: React.FC<{ edit?: boolean }> = ({ edit }) => {
       onChange={handleChange}
       required
     />
-    <div className="p-2 border border-white rounded-md">
-      <input // New category input field
-        className="input"
-        type="text"
-        value={newCategoryName}
-        onChange={(e) => setNewCategoryName(e.target.value)}
-        placeholder="Enter new category"
-      />
-      <button type="button" onClick={addNewCategory}>Add Category</button>
-    </div>
     <select
       className="input"
       name="category_id"
