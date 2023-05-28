@@ -68,35 +68,35 @@ export const ItemDetail = () => {
       <MerComponent condition={() => item !== undefined}>
         {item && itemImage && (
           <div>
-            <img
-              height={480}
-              width={480}
-              src={URL.createObjectURL(itemImage)}
-              alt="item"
-              onClick={() => navigate(`/item/${item.id}`)}
-            />
-            <div className="product">
-
-            <span><h2 className="product-name">{item.name}</h2></span>
-            <div className="product-details">
-              <p className="product-price">¥{item.price}</p>
-            </div>
-            <div className = "product-explain">
-              <div className="product-information">Item information</div>
-              <div className="product-description">
-                <p className="product-category">Category: {item.category_name}</p>
-
-                <p>
-                  {showFullDescription
-                    ? item.description
-                    : formatDescription(item.description)}
-                </p>
+            <div className="product-container">
+              <div className="image-container">
+                <img
+                  height={480}
+                  width={480}
+                  src={URL.createObjectURL(itemImage)}
+                  alt="item"
+                  onClick={() => navigate(`/item/${item.id}`)}
+                />
               </div>
-            </div>
+              <div className="product">
+                <span><h2 className="product-name">{item.name}</h2></span>
+                <div className="product-details">
+                  <p className="product-price">¥{item.price}</p>
+                </div>
+                <div className = "product-explain">
+                  <div className="product-information">★ Item information ★</div>
+                  <div className="product-description">
+                    <p className="product-category">Category: {item.category_name}</p>
 
-
-            </div>
-            {item.status === ItemStatuses.ItemStatusSoldOut ? (
+                    <p>
+                      {showFullDescription
+                        ? item.description
+                        : formatDescription(item.description)}
+                    </p>
+                  </div>
+                  
+              </div>
+              {item.status === ItemStatuses.ItemStatusSoldOut ? (
               <button disabled={true} onClick={onSubmit} className="button">
                 SoldOut
               </button>
@@ -105,6 +105,10 @@ export const ItemDetail = () => {
                 Purchase
               </button>
             )}
+            </div>
+            
+
+          </div>
           </div>
         )}
       </MerComponent>

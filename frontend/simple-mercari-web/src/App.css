@@ -144,9 +144,9 @@ body {
 
 .wrapper {
   display: grid;
-  margin:30px;
+  margin:5px;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  gap: 1rem;
+  gap: 10rem;
 }
 
 /* Product.css */
@@ -174,6 +174,7 @@ body {
 
 .product-category {
   font-size: 15px;
+  margin-bottom: 5px;
 }
 
 .product-description {
@@ -187,6 +188,7 @@ body {
 }
 
 .product-explain {
+  width: 300px;
   border-width: 3px; /* 枠線の太さを指定 */
   border-style: dashed;
   border-color: white; 
@@ -194,6 +196,7 @@ body {
   padding: 10px; /* テキストと枠線の間にスペースを作る（必要に応じて設定） */
   margin-bottom: 5px; /* 下方向のマージンを設定（必要に応じて設定） */
   font-weight: bold; /* フォントの太さを設定 */
+  margin-bottom: 10px;
 }
 
 .product-description p {
@@ -202,3 +205,32 @@ body {
   text-overflow: ellipsis;
 }
 
+.product-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.image-container {
+  width: 480px;
+  height: 480px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20px; /* 適切な余白を指定 */
+}
+
+.image-container_mini {
+  margin-top: 20px; /* 適切な余白を指定 */
+  margin-left: 40px; /* 適切な余白を指定 */
+  width: 200px;
+  height:200px;
+  object-fit: cover;
+  display: flex;
+  justify-content: center;
+}
+
+.image-placeholder {
+  width: 200px;
+  height: 200px;
+}

@@ -47,13 +47,13 @@ export const Item: React.FC<{ item: ItemShort, edit?:boolean }> = ({ item, edit 
   return (
     <div>
       <h3>{item.name}</h3>
+      <div className="image-container_mini">
       <img
         src={itemImage}
         alt={item.name}
-        height={300}
-        width={300}
         onClick={() => navigate(`/${edit ? 'edit' : 'item'}/${item.id}`)}
       />
+      </div>
       <div>
         <PriceImage price={`¥${item.price.toFixed(0)}`}/>
       </div>
