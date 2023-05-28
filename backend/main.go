@@ -84,7 +84,6 @@ func run(ctx context.Context) int {
 	e.GET("/items/:itemID/image", h.GetImage)
 	e.GET("/items/categories", h.GetCategories)
 	e.GET("/search", h.SearchItemByName)
-	e.GET("/category/:categoryID", h.GetCategoryItem)
 	e.POST("/register", h.Register)
 	e.POST("/login", h.Login)
 

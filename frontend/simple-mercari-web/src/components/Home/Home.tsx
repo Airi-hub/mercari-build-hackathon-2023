@@ -35,33 +35,9 @@ export const Home = () => {
   }, [name]);
 
   const itemListPage = (
-    <MerComponent>
-      <div>
-        <span>
-          <p>Logined User ID: {cookies.userID}</p>
-          <label id="MerInputLabel">Search </label>
-          <input
-          type="MerTextInput"
-          name="keyword"
-          required
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          />
-          <button onClick={() => navigate(`/search?name=${keyword}`)} id="MerButton">
-          Search
-        </button>
-        <div id="MerButtonContainer">
-          <button onClick={() => navigate(`/category/0`)} id="MerButton">all</button>
-          <button onClick={() => navigate(`/category/1`)} id="MerButton">food</button>
-          <button onClick={() => navigate(`/category/2`)} id="MerButton">fashion</button>
-          <button onClick={() => navigate(`/category/3`)} id="MerButton">furniture</button>
-          <button onClick={() => navigate(`/category/4`)} id="MerButton">book</button>
-        </div>
-        </span>
-        <ItemList items={items} />
-      </div>
-    </MerComponent>
-
+    <div className="component">
+      <ItemList items={items} />
+    </div>
   );
 
   return <>{itemListPage}</>;
