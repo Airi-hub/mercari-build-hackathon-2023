@@ -31,7 +31,7 @@ export const UserProfile: React.FC = () => {
     const res = await fetcher(`/balance`, getPostParams({
         balance: addedbalance,
       }, cookies.token)).catch(handlePostError)
-    window.location.reload()
+    if(res)window.location.reload()
   };
 
   return (
