@@ -15,12 +15,15 @@ interface Item {
   price: number;
   category_name: string;
 }
-export const Home = () => {
+export const Category = () => {
   const [cookies] = useCookies(["userID", "token"]);
   const [items, setItems] = useState<Item[]>([]);
+  var currentURL = window.location.href;
+  var parts = currentURL.split("/");
+  var category_id = parts[parts.length - 1];
 
   const fetchItems = () => {
-    fetcher<Item[]>(`/items`, {
+    fetcher<Item[]>(`/category/${category_id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +42,7 @@ export const Home = () => {
 
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [currentURL]);
 
   const signUpAndSignInPage = (
     <>
@@ -72,11 +75,10 @@ export const Home = () => {
           Search
         </button>
         <div id="MerButtonContainer">
-          <button onClick={() => navigate(`/category/0`)} id="MerButton">all</button>
-          <button onClick={() => navigate(`/category/1`)} id="MerButton">food</button>
-          <button onClick={() => navigate(`/category/2`)} id="MerButton">fashion</button>
-          <button onClick={() => navigate(`/category/3`)} id="MerButton">furniture</button>
-          <button onClick={() => navigate(`/category/4`)} id="MerButton">book</button>
+        <button onClick={() => navigate(`/category/0`)} id="MerButton">all</button>
+          <button onClick={() => navigate(`/category/1`)} id="MerButton">fashion</button>
+          <button onClick={() => navigate(`/category/2`)} id="MerButton">food</button>
+          <button onClick={() => navigate(`/category/3`)} id="MerButton">book</button>
         </div>
         </span>
         <ItemList items={items} />

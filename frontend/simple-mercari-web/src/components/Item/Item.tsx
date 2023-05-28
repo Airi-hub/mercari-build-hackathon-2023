@@ -62,10 +62,6 @@ export const Item: React.FC<{ item: Item }> = ({ item }) => {
       <div>
         <PriceImage price={`¥${item.price.toFixed(0)}`}/>
       </div>
-      <p>
-        <span>Category: {item.category_name}</span>
-        <br />
-      </p>
     </div>
   );
 };

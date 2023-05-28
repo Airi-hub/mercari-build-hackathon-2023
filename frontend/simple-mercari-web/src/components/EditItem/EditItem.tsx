@@ -103,7 +103,7 @@ export const EditItem = () => {
       });
 
 
-
+    
 
   const fetchCategories = () => {
     fetcher<Category[]>(`/items/categories`, {
