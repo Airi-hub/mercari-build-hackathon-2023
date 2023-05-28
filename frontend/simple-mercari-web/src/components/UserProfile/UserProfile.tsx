@@ -37,23 +37,25 @@ export const UserProfile: React.FC = () => {
   return (
       <div className="component">
         <div>
-          <div className="border border-white rounded-md p-2 bg-theme-700 flex flex-col gap-2">
-            <h2>
-              <span>Balance: {balance}</span>
-            </h2>
-            <input
-              className="input"
-              type="number"
-              name="balance"
-              placeholder="0"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setAddedBalance(Number(e.target.value));
-              }}
-              required
-            />
-            <button onClick={onBalanceSubmit} className="button button-wide">
-              Add balance
-            </button>
+          <div className="flex justify-center">
+            <div className="border border-white rounded-md p-2 bg-theme-700 flex flex-col gap-2" style={{ width: '300px' }}>
+              <h2>
+                <span>Balance: {balance}</span>
+              </h2>
+              <input
+                className="input"
+                type="number"
+                name="balance"
+                placeholder="0"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setAddedBalance(Number(e.target.value));
+                }}
+                required
+              />
+              <button onClick={onBalanceSubmit} className="button button-wide">
+                Add balance
+              </button>
+            </div>
           </div>
 
           <div>

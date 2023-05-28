@@ -46,7 +46,7 @@ export const Item: React.FC<{ item: ItemShort, edit?:boolean }> = ({ item, edit 
 
   return (
     <div>
-      <h3>{item.name}</h3>
+      <h3 style={{ fontSize: '25px' }}>{item.name}</h3>
       <img
         src={itemImage}
         alt={item.name}
