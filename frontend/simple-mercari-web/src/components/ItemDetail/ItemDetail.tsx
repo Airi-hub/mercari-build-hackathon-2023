@@ -43,6 +43,26 @@ export const ItemDetail = () => {
     fetchItem();
   }, []);
 
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
+  const handleShowMore = () => {
+    setShowFullDescription(true);
+  };
+
+  const formatDescription = (description: string): React.ReactNode => {
+    const maxLength = 30;
+    if (description.length <= maxLength) {
+      return description;
+    }
+    return (
+      <>
+        {description.slice(0, maxLength)}
+        <br />
+        {formatDescription(description.slice(maxLength))}
+      </>
+    );
+  };
+
   return (
     <div className="component">
       <MerComponent condition={() => item !== undefined}>
@@ -55,12 +75,22 @@ export const ItemDetail = () => {
               alt="item"
               onClick={() => navigate(`/item/${item.id}`)}
             />
-            <div className="grid grid-cols-2">
-              <span>Item Name:</span><span>{item.name}</span>
-              <span>Price:</span><span>{item.price}</span>
-              <span>UserID:</span><span>{item.user_id}</span>
-              <span>Category:</span><span>{item.category_name}</span>
-              <span>Description:</span><span>{item.description}</span>
+            <div className="product">
+
+            <span><h2 className="product-name">{item.name}</h2></span>
+            <div className="product-details">
+              <p className="product-price">¥{item.price}</p>
+            </div>
+            <div className="product-information">商品の情報</div>
+            <div className="product-description">
+              <p className="product-category">カテゴリー: {item.category_name}</p>
+              <p>
+                {showFullDescription
+                  ? item.description
+                  : formatDescription(item.description)}
+              </p>
+            </div>
+
             </div>
             {item.status === ItemStatuses.ItemStatusSoldOut ? (
               <button disabled={true} onClick={onSubmit} className="button">
