@@ -74,7 +74,6 @@ export const Listing: React.FC<{ edit?: boolean }> = ({ edit }) => {
     data.append("category_id", values.category_id.toString());
     data.append("price", values.price.toString());
     data.append("description", values.description);
-    data.append("image", values.image);
     const res = await fetcher<{ id: number }>(`/items/${params.id}`, {
       method: "PUT",
       body: data,
@@ -178,13 +177,13 @@ export const Listing: React.FC<{ edit?: boolean }> = ({ edit }) => {
       onChange={handleChange}
       required
     />
-    <input
+    {!edit && <input
       className="input"
       type="file"
       name="image"
       onChange={onFileChange}
       required
-    />
+    />}
     <button type="submit" className="button button-wide">
       {`${edit ? 'Update' : 'List'} this item`}
     </button>
