@@ -37,7 +37,7 @@ func PrepareDB(ctx context.Context) (*sql.DB, error) {
 	_, err = db.Exec(`
 	INSERT INTO category (name) VALUES ('food');
 	INSERT INTO category (name) VALUES ('fashion');
-	INSERT INTO category (name) VALUES ('food');
+	INSERT INTO category (name) VALUES ('furniture');
 	INSERT INTO category (name) VALUES ('book');
 	`)
 	if err != nil {

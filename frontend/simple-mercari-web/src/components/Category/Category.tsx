@@ -2,38 +2,62 @@ import { Login } from "../Login";
 import { Signup } from "../Signup";
 import { ItemList } from "../ItemList";
 import { useCookies } from "react-cookie";
+import { MerComponent } from "../MerComponent";
 import { useEffect, useState } from "react";
-import { fetcher, getGetParams, handleGetError } from "../../helper";
+import { toast } from "react-toastify";
+import { fetcher } from "../../helper";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-export const Home = () => {
+interface Item {
+  id: number;
+  name: string;
+  price: number;
+  category_name: string;
+}
+export const Category = () => {
   const [cookies] = useCookies(["userID", "token"]);
-  const { name } = useParams()
-  const [items, setItems] = useState<ItemShort[]>([]);
-  console.log(name)
+  const [items, setItems] = useState<Item[]>([]);
+  var currentURL = window.location.href;
+  var parts = currentURL.split("/");
+  var category_id = parts[parts.length - 1];
 
-  const fetchItems = async () => {
-    const data = await fetcher<ItemShort[]>(`/items`, getGetParams()).catch(handleGetError)
-    if (data) {
+  const fetchItems = () => {
+    fetcher<Item[]>(`/category/${category_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    })
+      .then((data) => {
         console.log("GET success:", data);
         setItems(data);
-    }
-  };
-
-  const searchItems = async () => {
-    const data = await fetcher<ItemShort[]>(`/search?name=${name}`, getGetParams()).catch(handleGetError)
-    if (data) {
-        console.log("GET success:", data);
-        setItems(data);
-    }
+      })
+      .catch((err) => {
+        console.log(`GET error:`, err);
+        toast.error(err.message);
+      });
   };
 
   useEffect(() => {
-    if (name) searchItems();
-    else fetchItems();
-  }, [name]);
+    fetchItems();
+  }, [currentURL]);
 
+  const signUpAndSignInPage = (
+    <>
+      <div>
+        <Signup />
+      </div>
+      or
+      <div>
+        <Login />
+      </div>
+    </>
+  );
+
+  const navigate = useNavigate();
+  const [keyword, setKeyword] = useState("");
   const itemListPage = (
     <MerComponent>
       <div>
@@ -61,9 +85,8 @@ export const Home = () => {
         <ItemList items={items} />
       </div>
     </MerComponent>
-
   );
 
-  return <>{itemListPage}</>;
 
+  return <>{cookies.token ? itemListPage : signUpAndSignInPage}</>;
 };

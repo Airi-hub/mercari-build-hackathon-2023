@@ -793,3 +793,32 @@ func (h *Handler) PutItem(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, putItemResponse{ID: int64(item.ID)})
 }
+
+func (h *Handler) GetCategoryItem(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	categoryID,_ := strconv.ParseInt(c.Param("categoryID"), 10, 64)
+
+	items, err := h.ItemRepo.GetItemByCategory(ctx, categoryID)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return echo.NewHTTPError(http.StatusNotFound, "not found handling")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	var res []searchItem
+	for _, item := range items {
+		cats, err := h.ItemRepo.GetCategories(ctx)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+		for _, cat := range cats {
+			if cat.ID == item.CategoryID {
+				res = append(res, searchItem{ID: item.ID, Name: item.Name, Price: item.Price, CategoryName: cat.Name})
+			}
+		}
+	}
+	return c.JSON(http.StatusOK, res)
+}

@@ -148,3 +148,12 @@ body {
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   gap: 1rem;
 }
+
+#MerButtonContainer {
+  display: flex;
+}
+
+#MerButtonContainer button {
+  flex: 1;
+  margin: 0 10px; /* 左右に10pxのマージンを追加 */
+}
