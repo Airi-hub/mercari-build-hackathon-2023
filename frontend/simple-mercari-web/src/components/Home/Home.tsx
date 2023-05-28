@@ -5,11 +5,15 @@ import { useCookies } from "react-cookie";
 import { useEffect, useState } from "react";
 import { fetcher, getGetParams, handleGetError } from "../../helper";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 export const Home = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const name = queryParams.get('name');
+  console.log(name)
   const [cookies] = useCookies(["userID", "token"]);
-  const { name } = useParams()
+//  const { name } = useParams()
   const [items, setItems] = useState<ItemShort[]>([]);
   console.log(name)
 
