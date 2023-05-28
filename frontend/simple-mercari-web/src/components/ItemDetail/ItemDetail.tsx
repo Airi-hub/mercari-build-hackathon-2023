@@ -77,19 +77,23 @@ export const ItemDetail = () => {
             />
             <div className="product">
 
-              <span><h2 className="product-name">{item.name}</h2></span>
-              <div className="product-details">
-                <p className="product-price">¥{item.price}</p>
-              </div>
-              <div className="product-information">商品の情報</div>
+            <span><h2 className="product-name">{item.name}</h2></span>
+            <div className="product-details">
+              <p className="product-price">¥{item.price}</p>
+            </div>
+            <div className = "product-explain">
+              <div className="product-information">Item information</div>
               <div className="product-description">
-                <p className="product-category">カテゴリー: {item.category_name}</p>
+                <p className="product-category">Category: {item.category_name}</p>
+
                 <p>
                   {showFullDescription
                     ? item.description
                     : formatDescription(item.description)}
                 </p>
               </div>
+            </div>
+
 
             </div>
             {item.status === ItemStatuses.ItemStatusSoldOut ? (
