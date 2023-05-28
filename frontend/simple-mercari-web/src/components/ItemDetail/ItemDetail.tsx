@@ -21,22 +21,22 @@ export const ItemDetail = () => {
   const fetchItem = async () => {
     const res = await fetcher<Item>(`/items/${params.id}`, getGetParams()).catch(handleGetError)
     if (res) {
-        console.log("GET success:", res);
-        setItem(res);
+      console.log("GET success:", res);
+      setItem(res);
     }
 
     const resBlob = await fetcherBlob(`/items/${params.id}/image`, getGetParams()).catch(handleGetError)
     if (resBlob) {
-        console.log("GET success:", res);
-        setItemImage(resBlob);
+      console.log("GET success:", res);
+      setItemImage(resBlob);
     }
   };
 
   const onSubmit = async (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const res = await fetcher<Item[]>(`/purchase/${params.id}`, getPostParams({
-        user_id: Number(cookies.userID),
-      }, cookies.token)).catch(handlePostError)
-      window.location.reload()
+    await fetcher<Item[]>(`/purchase/${params.id}`, getPostParams({
+      user_id: Number(cookies.userID),
+    }, cookies.token)).catch(handlePostError)
+    window.location.reload()
   };
 
   useEffect(() => {
@@ -77,19 +77,19 @@ export const ItemDetail = () => {
             />
             <div className="product">
 
-            <span><h2 className="product-name">{item.name}</h2></span>
-            <div className="product-details">
-              <p className="product-price">¥{item.price}</p>
-            </div>
-            <div className="product-information">商品の情報</div>
-            <div className="product-description">
-              <p className="product-category">カテゴリー: {item.category_name}</p>
-              <p>
-                {showFullDescription
-                  ? item.description
-                  : formatDescription(item.description)}
-              </p>
-            </div>
+              <span><h2 className="product-name">{item.name}</h2></span>
+              <div className="product-details">
+                <p className="product-price">¥{item.price}</p>
+              </div>
+              <div className="product-information">商品の情報</div>
+              <div className="product-description">
+                <p className="product-category">カテゴリー: {item.category_name}</p>
+                <p>
+                  {showFullDescription
+                    ? item.description
+                    : formatDescription(item.description)}
+                </p>
+              </div>
 
             </div>
             {item.status === ItemStatuses.ItemStatusSoldOut ? (

@@ -1,12 +1,10 @@
-import { Login } from "../Login";
-import { Signup } from "../Signup";
 import { ItemList } from "../ItemList";
 import { useCookies } from "react-cookie";
 import { MerComponent } from "../MerComponent";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { fetcher } from "../../helper";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
 export const SearchResults = () => {
@@ -37,18 +35,6 @@ export const SearchResults = () => {
     fetchItems();
   }, [currentURL]);
 
-  const signUpAndSignInPage = (
-    <>
-      <div>
-        <Signup />
-      </div>
-      or
-      <div>
-        <Login />
-      </div>
-    </>
-  );
-
   const navigate = useNavigate();
   var [keyword, setKeyword] = useState("");
   const itemListPage = (
@@ -74,5 +60,5 @@ export const SearchResults = () => {
   );
 
 
-  return <>{cookies.token ? itemListPage : signUpAndSignInPage}</>;
+  return <>{itemListPage}</>;
 };

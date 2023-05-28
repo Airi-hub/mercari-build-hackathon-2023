@@ -5,13 +5,6 @@ import { fetcherBlob } from "../../helper";
 import './PriceImage.css'; // CSSファイルのインポート
 
 
-interface Item {
-  id: number;
-  name: string;
-  price: number;
-  category_name: string;
-}
-
 interface PriceImageProps {
   price: string;
 }
@@ -48,6 +41,7 @@ export const Item: React.FC<{ item: ItemShort, edit?:boolean }> = ({ item, edit 
     }
 
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item]);
 
   return (
