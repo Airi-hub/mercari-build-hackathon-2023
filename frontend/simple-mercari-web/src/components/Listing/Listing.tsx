@@ -47,8 +47,11 @@ export const Listing: React.FC<{ edit?: boolean }> = ({ edit }) => {
       [event.target.name]: event.target.files![0],
     });
   };
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    edit ? update() : insert()
+  }
+  const insert = async () => {
     const data = new FormData();
     data.append("name", values.name);
     data.append("category_id", values.category_id.toString());
@@ -65,6 +68,22 @@ export const Listing: React.FC<{ edit?: boolean }> = ({ edit }) => {
     if (res) sell(res.id);
   };
 
+  const update = async () => {
+    const data = new FormData();
+    data.append("name", values.name);
+    data.append("category_id", values.category_id.toString());
+    data.append("price", values.price.toString());
+    data.append("description", values.description);
+    data.append("image", values.image);
+    const res = await fetcher<{ id: number }>(`/items/${params.id}`, {
+      method: "PUT",
+      body: data,
+      headers: {
+        Authorization: `Bearer ${cookies.token}`,
+      },
+    }).catch(handlePostError)
+    if (res) toast.success('Item updated successfully')
+  };
 
   const sell = async (itemID: number) => {
     const response = await fetcher(`/sell`, getPostParams({
