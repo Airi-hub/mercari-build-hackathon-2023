@@ -75,10 +75,11 @@ export const Category = () => {
           Search
         </button>
         <div id="MerButtonContainer">
-        <button onClick={() => navigate(`/category/0`)} id="MerButton">all</button>
-          <button onClick={() => navigate(`/category/1`)} id="MerButton">fashion</button>
-          <button onClick={() => navigate(`/category/2`)} id="MerButton">food</button>
-          <button onClick={() => navigate(`/category/3`)} id="MerButton">book</button>
+          <button onClick={() => navigate(`/category/0`)} id="MerButton">all</button>
+          <button onClick={() => navigate(`/category/1`)} id="MerButton">food</button>
+          <button onClick={() => navigate(`/category/2`)} id="MerButton">fashion</button>
+          <button onClick={() => navigate(`/category/3`)} id="MerButton">furniture</button>
+          <button onClick={() => navigate(`/category/4`)} id="MerButton">book</button>
         </div>
         </span>
         <ItemList items={items} />
