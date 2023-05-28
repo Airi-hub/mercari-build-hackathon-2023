@@ -10,25 +10,36 @@ import "./App.css";
 import { Header } from "./components/Header/Header";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AppContextProvider, { RequireLoggedInUser } from "./contexts/AppContext";
+import { Footer } from "./components/Footer/Footer";
 
 export const App: React.VFC = () => {
-  return (
-    <>
-      <ToastContainer position="bottom-center"/>
 
-      <BrowserRouter>
-        <div className="MerComponent">
-          <Header></Header>
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="/item/:id" element={<ItemDetail />} />
-            <Route path="/user/:id" element={<UserProfile />} />
-            <Route path="/sell" element={<Listing />} />
-            <Route path="/search" element={<SearchResults />} />
-            <Route path="/edit/:id" element={<EditItem />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </>
-  );
+  
+  return <>
+    <ToastContainer position="bottom-center" />
+    <div className="h-full grid grid-rows-frame">
+      <AppContextProvider>
+        <BrowserRouter>
+          <Header />
+          <div className="overflow-scroll">
+            <RequireLoggedInUser>
+              <div className="p-4 flex justify-center">
+                <Routes>
+                  <Route index element={<Home />} />
+                  <Route path="/item/:id" element={<ItemDetail />} />
+                  <Route path="/user/:id" element={<UserProfile />} />
+                  <Route path="/sell" element={<Listing />} />
+                  <Route path="/search/:name" element={<Home />} />
+                  <Route path="/edit/:id" element={<Listing edit />} />
+                </Routes>
+              </div>
+            </RequireLoggedInUser>
+          </div>
+          <Footer />
+        </BrowserRouter>
+      </AppContextProvider>
+    </div>
+  </>
+
 };

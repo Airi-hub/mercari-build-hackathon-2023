@@ -1,22 +1,19 @@
 import React from "react";
-import { Item } from "../Item";
-interface Item {
-  id: number;
-  name: string;
-  price: number;
-  category_name: string;
-}
+import { Item } from "../Item/Item";
 
 interface Prop {
-  items: Item[];
+  items: ItemShort[];
+  edit?: boolean;
 }
 
 export const ItemList: React.FC<Prop> = (props) => {
   return (
-    <div className="wrapper">
+
+    <div className="w-full sm:flex sm:flex-wrap sm:gap-1" >
+
       {props.items &&
-        props.items.map((item) => {
-          return <Item item={item} />;
+        props.items.map((item, i) => {
+          return <div key={i} className="basis-64 grow-0 shrink-0"><Item item={item} edit={props.edit} /></div>;
         })}
     </div>
   );

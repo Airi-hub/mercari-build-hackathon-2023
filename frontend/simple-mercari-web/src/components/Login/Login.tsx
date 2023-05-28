@@ -1,69 +1,54 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useCookies } from "react-cookie";
-import { toast } from "react-toastify";
-import { fetcher } from "../../helper";
+import { useAppContext } from "../../contexts/AppContext";
+
+interface Values {
+  name: string | undefined
+  user_id: number | undefined,
+  password: string | undefined
+}
 
 export const Login = () => {
-  const [userID, setUserID] = useState<number>();
-  const [password, setPassword] = useState<string>();
-  const [_, setCookie] = useCookies(["userID", "token"]);
+  const app = useAppContext()
+  const [signup, setSignup] = useState<boolean>(false)
+  const [values, setValues] = useState<Values>({ name: undefined, user_id: undefined, password: undefined });
 
-  const navigate = useNavigate();
-
-  const onSubmit = (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    fetcher<{ id: number; name: string; token: string }>(`/login`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_id: userID,
-        password: password,
-      }),
-    })
-      .then((user) => {
-        toast.success("Signed in!");
-        console.log("POST success:", user.id);
-        setCookie("userID", user.id);
-        setCookie("token", user.token);
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log(`POST error:`, err);
-        toast.error(err.message);
-      });
-  };
-
-  return (
-    <div>
-      <div className="Login">
-        <label id="MerInputLabel">User ID</label>
-        <input
-          type="number"
-          name="userID"
-          id="MerTextInput"
-          placeholder="UserID"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setUserID(Number(e.target.value));
-          }}
-          required
-        />
-        <label id="MerInputLabel">Password</label>
-        <input
-          type="password"
-          name="password"
-          id="MerTextInput"
-          placeholder="password"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setPassword(e.target.value);
-          }}
-        />
-        <button onClick={onSubmit} id="MerButton">
-          Login
-        </button>
-      </div>
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setValues(values => ({ ...values, [e.target.name]: e.target.type === "number" ? Number(e.target.value) : e.target.value }))
+  const handleSubmit = async () => {
+    if (!signup) app.login(values)
+    else {
+      const id = await app.signup(values)
+      setValues(values => ({ ...values, user_id: id }))
+    }
+  }
+  return <div className="p-4 flex justify-center">
+    <div className="component">
+      <div className="pb-4 text-xl font-bold text-theme-500">{signup ? 'Signup' : 'Login'}</div>
+      <label className="label">{signup ? 'User Name' : 'User ID'}</label>
+      <input
+        className="input"
+        type={signup ? 'text' : 'number'}
+        name={signup ? 'name' : 'user_id'}
+        id="MerTextInput"
+        placeholder={signup ? 'User Name' : 'User ID'}
+        onChange={handleChange}
+        required
+      />
+      <label className="label">Password</label>
+      <input
+        className="input"
+        type="password"
+        name="password"
+        id="MerTextInput"
+        placeholder="password"
+        onChange={handleChange}
+      />
+      <button className="my-2 button" onClick={handleSubmit}>
+        {signup ? 'Signup' : 'Login'}
+      </button>
+      {signup && values.user_id ? (
+        <p>Use "{values.user_id}" as UserID for login</p>
+      ) : null}
+      <div className="text-theme-500 cursor-pointer" onClick={() => setSignup(signup => !signup)}>{signup ? 'Already have account? Login here' : "Don't have account? Signup here"}</div>
     </div>
-  );
+  </div>
 };

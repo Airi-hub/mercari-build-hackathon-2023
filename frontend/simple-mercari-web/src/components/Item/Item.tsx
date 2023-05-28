@@ -3,14 +3,7 @@ import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { fetcherBlob } from "../../helper";
 
-interface Item {
-  id: number;
-  name: string;
-  price: number;
-  category_name: string;
-}
-
-export const Item: React.FC<{ item: Item }> = ({ item }) => {
+export const Item: React.FC<{ item: ItemShort, edit?:boolean }> = ({ item, edit }) => {
   const navigate = useNavigate();
   const [itemImage, setItemImage] = useState<string>("");
   const [cookies] = useCookies(["token"]);
@@ -43,7 +36,7 @@ export const Item: React.FC<{ item: Item }> = ({ item }) => {
         alt={item.name}
         height={300}
         width={300}
-        onClick={() => navigate(`/item/${item.id}`)}
+        onClick={() => navigate(`/${edit ? 'edit' : 'item'}/${item.id}`)}
       />
       <p>
         <span>Category: {item.category_name}</span>

@@ -1,28 +1,26 @@
 import { FaHome, FaCamera, FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import "./Footer.css";
 
 export const Footer: React.FC = () => {
-  const [cookies] = useCookies(["userID"]);
+  const [cookies] = useCookies(["userID", "token"]);
   const navigate = useNavigate();
 
-  if (!cookies.userID) {
+  if (!cookies.token) {
     return <></>;
   }
-
   return (
-    <footer>
-      <div className="MerFooterItem" onClick={() => navigate("/")}>
+    <footer className="w-full p-px grid grid-flow-col justify-stretch gap-px bg-white">
+      <div className="footer-item" onClick={() => navigate("/")}>
         <FaHome />
         <p>Home</p>
       </div>
-      <div className="MerFooterItem" onClick={() => navigate("/sell")}>
+      <div className="footer-item" onClick={() => navigate("/sell")}>
         <FaCamera />
         <p>Listing</p>
       </div>
       <div
-        className="MerFooterItem"
+        className="footer-item"
         onClick={() => navigate(`/user/${cookies.userID}`)}
       >
         <FaUser />

@@ -2,27 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { MerComponent } from "../MerComponent";
-import { toast } from "react-toastify";
-import { fetcher, fetcherBlob } from "../../helper";
+import { fetcher, fetcherBlob, getGetParams, getPostParams, handleGetError, handlePostError } from "../../helper";
 
-const ItemStatus = {
+const ItemStatuses = {
   ItemStatusInitial: 0,
   ItemStatusOnSale: 1,
   ItemStatusSoldOut: 2,
 } as const;
-
-type ItemStatus = (typeof ItemStatus)[keyof typeof ItemStatus];
-
-interface Item {
-  id: number;
-  name: string;
-  category_id: number;
-  category_name: string;
-  user_id: number;
-  price: number;
-  status: ItemStatus;
-  description: string;
-}
 
 export const ItemDetail = () => {
   const navigate = useNavigate();
@@ -31,57 +17,26 @@ export const ItemDetail = () => {
   const [itemImage, setItemImage] = useState<Blob>();
   const [cookies] = useCookies(["token", "userID"]);
 
-  const fetchItem = () => {
-    fetcher<Item>(`/items/${params.id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
+
+  const fetchItem = async () => {
+    const res = await fetcher<Item>(`/items/${params.id}`, getGetParams()).catch(handleGetError)
+    if (res) {
         console.log("GET success:", res);
         setItem(res);
-      })
-      .catch((err) => {
-        console.log(`GET error:`, err);
-        toast.error(err.message);
-      });
+    }
 
-    fetcherBlob(`/items/${params.id}/image`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
+    const resBlob = await fetcherBlob(`/items/${params.id}/image`, getGetParams()).catch(handleGetError)
+    if (resBlob) {
         console.log("GET success:", res);
-        setItemImage(res);
-      })
-      .catch((err) => {
-        console.log(`GET error:`, err);
-        toast.error(err.message);
-      });
+        setItemImage(resBlob);
+    }
   };
 
-  const onSubmit = (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    fetcher<Item[]>(`/purchase/${params.id}`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${cookies.token}`,
-      },
-      body: JSON.stringify({
+  const onSubmit = async (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const res = await fetcher<Item[]>(`/purchase/${params.id}`, getPostParams({
         user_id: Number(cookies.userID),
-      }),
-    })
-      .then((_) => window.location.reload())
-      .catch((err) => {
-        console.log(`POST error:`, err);
-        toast.error(err.message);
-      });
+      }, cookies.token)).catch(handlePostError)
+      window.location.reload()
   };
 
   useEffect(() => {
@@ -89,7 +44,7 @@ export const ItemDetail = () => {
   }, []);
 
   return (
-    <div className="ItemDetail">
+    <div className="component">
       <MerComponent condition={() => item !== undefined}>
         {item && itemImage && (
           <div>
@@ -100,23 +55,19 @@ export const ItemDetail = () => {
               alt="item"
               onClick={() => navigate(`/item/${item.id}`)}
             />
-            <p>
-              <span>Item Name: {item.name}</span>
-              <br />
-              <span>Price: {item.price}</span>
-              <br />
-              <span>UserID: {item.user_id}</span>
-              <br />
-              <span>Category: {item.category_name}</span>
-              <br />
-              <span>Description: {item.description}</span>
-            </p>
-            {item.status == ItemStatus.ItemStatusSoldOut ? (
-              <button disabled={true} onClick={onSubmit} id="MerDisableButton">
+            <div className="grid grid-cols-2">
+              <span>Item Name:</span><span>{item.name}</span>
+              <span>Price:</span><span>{item.price}</span>
+              <span>UserID:</span><span>{item.user_id}</span>
+              <span>Category:</span><span>{item.category_name}</span>
+              <span>Description:</span><span>{item.description}</span>
+            </div>
+            {item.status === ItemStatuses.ItemStatusSoldOut ? (
+              <button disabled={true} onClick={onSubmit} className="button">
                 SoldOut
               </button>
             ) : (
-              <button onClick={onSubmit} id="MerButton">
+              <button onClick={onSubmit} className="button">
                 Purchase
               </button>
             )}
