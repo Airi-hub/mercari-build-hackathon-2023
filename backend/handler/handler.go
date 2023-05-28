@@ -254,7 +254,7 @@ func (h *Handler) Login(c echo.Context) error {
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 		if err == bcrypt.ErrMismatchedHashAndPassword {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
+			return echo.NewHTTPError(http.StatusUnauthorized, "The password is incollect")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -797,7 +797,7 @@ func (h *Handler) PutItem(c echo.Context) error {
 func (h *Handler) GetCategoryItem(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	categoryID,_ := strconv.ParseInt(c.Param("categoryID"), 10, 64)
+	categoryID, _ := strconv.ParseInt(c.Param("categoryID"), 10, 64)
 
 	items, err := h.ItemRepo.GetItemByCategory(ctx, categoryID)
 
