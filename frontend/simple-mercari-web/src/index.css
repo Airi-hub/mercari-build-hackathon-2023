@@ -29,7 +29,7 @@ code {
 
 @layer utilities {
   .component {
-    @apply p-4 flex flex-col gap-2 text-theme-500 bg-theme-900 rounded-md
+    @apply p-4 flex flex-col gap-2 text-theme-500 bg-theme-100 rounded-md
   }
   .label {
     @apply block text-lg text-theme-500
@@ -69,7 +69,8 @@ code {
     @apply text-white bg-theme-500 flex gap-1 justify-center items-center cursor-pointer
   }
   .tab-group {
-    @apply text-sm font-medium text-center text-theme-500 border-b border-theme-200
+    @apply text-sm font-medium text-center text-theme-500 border-b border-theme-500;
+    font-size: 22px;
   }
   .tab {
     @apply -mt-4 inline-block align-middle p-4 border-b-2 border-transparent rounded-t-lg
