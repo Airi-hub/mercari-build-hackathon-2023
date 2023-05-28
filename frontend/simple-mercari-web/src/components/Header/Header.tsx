@@ -19,10 +19,10 @@ export const Header: React.FC = () => {
   };
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => setName(e.currentTarget.value)
 
-  return <header className='w-full px-4 flex flex-row justify-between items-center text-theme-100 bg-theme-800'>
+  return <header className='w-full px-4 flex flex-row justify-between items-center text-theme-100 bg-theme-800'style={{  top: '0' }}>
     <p>
-      <b className='text-white'>
-        <img src="/logo.png" alt="Simple Mercari" style={{ height: "60px", width: "auto" }} />
+    <b className='text-white'>
+        <img src="/logo.png" alt="Simple Mercari" style={{ height: "120px", width: "auto" ,marginTop: "50px"}} />
       </b>
     </p>
     <div className='flex items-center'>
