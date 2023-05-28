@@ -21,22 +21,22 @@ export const ItemDetail = () => {
   const fetchItem = async () => {
     const res = await fetcher<Item>(`/items/${params.id}`, getGetParams()).catch(handleGetError)
     if (res) {
-        console.log("GET success:", res);
-        setItem(res);
+      console.log("GET success:", res);
+      setItem(res);
     }
 
     const resBlob = await fetcherBlob(`/items/${params.id}/image`, getGetParams()).catch(handleGetError)
     if (resBlob) {
-        console.log("GET success:", res);
-        setItemImage(resBlob);
+      console.log("GET success:", res);
+      setItemImage(resBlob);
     }
   };
 
   const onSubmit = async (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const res = await fetcher<Item[]>(`/purchase/${params.id}`, getPostParams({
-        user_id: Number(cookies.userID),
-      }, cookies.token)).catch(handlePostError)
-      window.location.reload()
+    await fetcher<Item[]>(`/purchase/${params.id}`, getPostParams({
+      user_id: Number(cookies.userID),
+    }, cookies.token)).catch(handlePostError)
+    window.location.reload()
   };
 
   useEffect(() => {
@@ -85,6 +85,7 @@ export const ItemDetail = () => {
               <div className="product-information">Item information</div>
               <div className="product-description">
                 <p className="product-category">Category: {item.category_name}</p>
+
                 <p>
                   {showFullDescription
                     ? item.description
@@ -92,6 +93,7 @@ export const ItemDetail = () => {
                 </p>
               </div>
             </div>
+
 
             </div>
             {item.status === ItemStatuses.ItemStatusSoldOut ? (

@@ -68,4 +68,15 @@ code {
   .footer-item {
     @apply text-white bg-theme-500 flex gap-1 justify-center items-center cursor-pointer
   }
-}
+  .tab-group {
+    @apply text-sm font-medium text-center text-theme-500 border-b border-theme-200
+  }
+  .tab {
+    @apply inline-block p-4 border-b-2 border-transparent rounded-t-lg
+  }
+  .tab:hover {
+    @apply text-theme-300 border-theme-300
+  }
+  .tab-active {
+    @apply text-theme-200 border-b-2 border-theme-200
+  }}
