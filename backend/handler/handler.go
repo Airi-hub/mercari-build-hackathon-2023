@@ -282,6 +282,9 @@ func (h *Handler) Login(c echo.Context) error {
 }
 
 func (h *Handler) AddItem(c echo.Context) error {
+
+	maxSize := int64(1 * 1024 * 1024) //1MB in bytes
+
 	// TODO: validation <-checked by Kurotaka
 	// http.StatusBadRequest(400)
 	ctx := c.Request().Context()
@@ -308,6 +311,11 @@ func (h *Handler) AddItem(c echo.Context) error {
 	file, err := c.FormFile("image")
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	// Check the file size
+	if file.Size > maxSize {
+		return echo.NewHTTPError(http.StatusBadRequest, "Image file size must be 1MB or less")
 	}
 
 	src, err := file.Open()
