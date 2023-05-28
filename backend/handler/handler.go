@@ -391,9 +391,26 @@ func (h *Handler) Sell(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	// TODO: check req.UserID and item.UserID
+	/////
+
+	userID, err := getUserID(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err)
+	}
+
+	// リクエストユーザーIDとアイテムユーザーIDが一致するかどうか確認
+	if userID != item.UserID {
+		return echo.NewHTTPError(http.StatusPreconditionFailed, fmt.Sprintf("RequestUserID:%d,ItemUserID:%d", userID, item.UserID))
+	}
+
+	// 初期状態の場合のみ、アイテムのステータスを更新
+	if item.Status != domain.ItemStatusInitial {
+		return echo.NewHTTPError(http.StatusPreconditionFailed, "アイテムのステータスが初期状態ではありません")
+	}
+
+	// TODO: check req.UserID and item.UserID <=checked by Kurotaka
 	// http.StatusPreconditionFailed(412)
-	// TODO: only update when status is initial
+	// TODO: only update when status is initial <=checked by Kurotaka
 	// http.StatusPreconditionFailed(412)
 	if err := h.ItemRepo.UpdateItemStatus(ctx, item.ID, domain.ItemStatusOnSale); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
