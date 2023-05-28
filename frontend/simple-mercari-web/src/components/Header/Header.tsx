@@ -17,11 +17,13 @@ export const Header: React.FC = () => {
     event.preventDefault();
     app.logout();
   };
-  const handleChange = (e:ChangeEvent<HTMLInputElement>) => setName(e.currentTarget.value)
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => setName(e.currentTarget.value)
 
   return <header className='w-full px-4 flex flex-row justify-between items-center text-theme-100 bg-theme-800'>
     <p>
-      <b className='text-white'>Simple Mercari</b>
+      <b className='text-white'>
+        <img src="/logo.png" alt="Simple Mercari" style={{ height: "60px", width: "auto" }} />
+      </b>
     </p>
     <div className='flex items-center'>
       <input className="input" type="text" placeholder="Search" value={name} onChange={handleChange} /><Link to={`/search?name=${name}`}><SearchIcon /></Link>
