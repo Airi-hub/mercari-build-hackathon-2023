@@ -1,22 +1,15 @@
-import { Login } from "../Login";
-import { Signup } from "../Signup";
 import { ItemList } from "../ItemList";
-import { useCookies } from "react-cookie";
 import { useEffect, useState } from "react";
 import { fetcher, getGetParams, handleGetError } from "../../helper";
 import "react-toastify/dist/ReactToastify.css";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 export const Home = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const name = queryParams.get('name');
-  console.log(name)
-  const [cookies] = useCookies(["userID", "token"]);
-//  const { name } = useParams()
+  const { id } = useParams();
   const [items, setItems] = useState<ItemShort[]>([]);
-  console.log(name)
-
   const fetchItems = async () => {
     const data = await fetcher<ItemShort[]>(`/items`, getGetParams()).catch(handleGetError)
     if (data) {
@@ -24,7 +17,19 @@ export const Home = () => {
         setItems(data);
     }
   };
-  const navigate = useNavigate();
+
+  const fetchCategoryItems = async () => {
+    console.log(id)
+    const data = await fetcher<Item[]>(`/category/${id}`, getGetParams()).catch(handleGetError)
+    console.log(data)
+    if (data) {
+        console.log("GET success:", data);
+        setItems(data);
+    } else if (data === null) {
+      console.log("GET returned no data")
+      setItems([])
+    }
+  };
 
   const searchItems = async () => {
     const data = await fetcher<ItemShort[]>(`/search?name=${name}`, getGetParams()).catch(handleGetError)
@@ -36,25 +41,27 @@ export const Home = () => {
 
   useEffect(() => {
     if (name) searchItems();
+    else if (id) fetchCategoryItems();
     else fetchItems();
-  }, [name]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, id]);
 
-  const CategoryListPage = (
-    <div id="MerButtonContainer">
-      <button onClick={() => navigate(`/category/0`)} id="MerButton">all</button>
-      <button onClick={() => navigate(`/category/1`)} id="MerButton">food</button>
-      <button onClick={() => navigate(`/category/2`)} id="MerButton">fashion</button>
-      <button onClick={() => navigate(`/category/3`)} id="MerButton">furniture</button>
-      <button onClick={() => navigate(`/category/4`)} id="MerButton">book</button>
-    </div>
-  );
-
+  const categories = [ "all", "food", "fashion","furniture", "book"];
   const itemListPage = (
     <div className="component">
+      <div className="tab-group">
+          <ul className="flex flex-wrap -mb-px">
+            {categories.map((category, i) => <li key={category} className="mr-2">
+                  <Link to={`/category/${i}`} className={`tab${Number(id) === i ? ' tab-active' : ''}`}>
+                      {category}
+                  </Link>
+              </li>)}
+          </ul>
+      </div>
       <ItemList items={items} />
     </div>
   );
 
-  return <>{CategoryListPage}{itemListPage}</>;
+  return <>{itemListPage}</>;
 
 };

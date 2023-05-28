@@ -109,6 +109,7 @@ export const Listing: React.FC<{ edit?: boolean }> = ({ edit }) => {
   useEffect(() => {
     fetchCategories();
     if (edit) fetchItem();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   console.log(values)
   return <form onSubmit={onSubmit} className="component">
