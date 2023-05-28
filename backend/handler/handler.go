@@ -306,22 +306,22 @@ func (h *Handler) AddItem(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Price must be greater than 0")
 	}
 
-	// //validation  (whether description is too long)
-	// if utf8.RuneCountInString(req.Description) > 50 {
-	// 	return echo.NewHTTPError(http.StatusBadRequest, "ItemName must be within 50 characters")
-	// }
-
 	//validation  (whether description is too long)
 	if utf8.RuneCountInString(req.Description) > 100 {
-		runeCount := 0
-		for i := range req.Description {
-			if runeCount == 50 {
-				req.Description = req.Description[:i]
-				break
-			}
-			runeCount++
-		}
+		return echo.NewHTTPError(http.StatusBadRequest, "Description must be within 100 characters")
 	}
+
+	// //validation  (whether description is too long)
+	// if utf8.RuneCountInString(req.Description) > 100 {
+	// 	runeCount := 0
+	// 	for i := range req.Description {
+	// 		if runeCount == 50 {
+	// 			req.Description = req.Description[:i]
+	// 			break
+	// 		}
+	// 		runeCount++
+	// 	}
+	// }
 
 	userID, err := getUserID(c)
 	if err != nil {
