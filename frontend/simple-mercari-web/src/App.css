@@ -222,15 +222,8 @@ body {
 
 .image-container_mini {
   margin-top: 20px; /* 適切な余白を指定 */
-  margin-left: 40px; /* 適切な余白を指定 */
   width: 200px;
   height:200px;
-  object-fit: cover;
-  display: flex;
+  object-fit: scale-down;
   justify-content: center;
-}
-
-.image-placeholder {
-  width: 200px;
-  height: 200px;
 }

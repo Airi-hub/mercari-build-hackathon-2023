@@ -51,6 +51,7 @@ export const Item: React.FC<{ item: ItemShort, edit?:boolean }> = ({ item, edit 
       <img
         src={itemImage}
         alt={item.name}
+        width={200}
         onClick={() => navigate(`/${edit ? 'edit' : 'item'}/${item.id}`)}
       />
       </div>

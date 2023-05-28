@@ -38,6 +38,7 @@ export const UserProfile: React.FC = () => {
       <div className="component">
         <div>
           <div className="border border-white rounded-md p-2 bg-theme-700 flex flex-col gap-2">
+            
             <h2>
               <span>Balance: {balance}</span>
             </h2>
