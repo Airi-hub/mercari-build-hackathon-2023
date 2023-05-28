@@ -6,6 +6,7 @@ import { UserProfile } from "./components/UserProfile";
 import { Listing } from "./components/Listing";
 import { SearchResults } from "./components/SearchResults";
 import { EditItem } from "./components/EditItem";
+import { Category } from "./components/Category";
 import "./App.css";
 import { Header } from "./components/Header/Header";
 import { ToastContainer } from 'react-toastify';
@@ -32,6 +33,7 @@ export const App: React.VFC = () => {
                   <Route path="/sell" element={<Listing />} />
                   <Route path="/search/:name" element={<Home />} />
                   <Route path="/edit/:id" element={<Listing edit />} />
+                  <Route path="/category/:id" element={<Category />} />
                 </Routes>
               </div>
             </RequireLoggedInUser>

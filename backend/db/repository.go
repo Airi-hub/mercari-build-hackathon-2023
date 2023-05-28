@@ -92,6 +92,7 @@ type ItemRepository interface {
 	GetItemStatus(ctx context.Context, id int32) (domain.ItemStatus, error)
 	SearchItemByName(ctx context.Context, keyword string) ([]domain.Item, error)
 	PutItem(ctx context.Context, item domain.Item, itemID int64) (domain.Item, error)
+	GetItemByCategory(ctx context.Context, categoryID int64) ([]domain.Item, error)
 }
 
 type ItemDBRepository struct {
@@ -236,10 +237,43 @@ func (r *ItemDBRepository) GetCategories(ctx context.Context) ([]domain.Category
 }
 
 func (r *ItemDBRepository) SearchItemByName(ctx context.Context, keyword string) ([]domain.Item, error) {
-	rows, err := r.QueryContext(ctx, "SELECT * FROM items WHERE items.name LIKE ?", "%"+keyword+"%")
+	rows, err := r.QueryContext(ctx, "SELECT * FROM items WHERE items.name LIKE ? AND status = ? ORDER BY updated_at DESC", "%"+keyword+"%",domain.ItemStatusOnSale)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+	var items []domain.Item
+	for rows.Next() {
+		var item domain.Item
+		if err := rows.Scan(&item.ID, &item.Name, &item.Price, &item.Description, &item.CategoryID, &item.UserID, &item.Image, &item.Status, &item.CreatedAt, &item.UpdatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, item)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+
+func (r *ItemDBRepository) GetItemByCategory(ctx context.Context, categoryID int64) ([]domain.Item, error) {
+	var query string
+	var args []interface{}
+	if categoryID == 0 {
+		query = "SELECT * FROM items WHERE status = ? ORDER BY updated_at DESC"
+		args = []interface{}{domain.ItemStatusOnSale}
+	} else {
+		query = "SELECT * FROM items WHERE category_id = ? AND status = ? ORDER BY updated_at DESC"
+		args = []interface{}{categoryID, domain.ItemStatusOnSale}
+	}
+	
+	rows, err := r.QueryContext(ctx, query, args...)
+
+	if err != nil {
+		return nil, err
+	}
+	
 	defer rows.Close()
 	var items []domain.Item
 	for rows.Next() {

@@ -20,6 +20,7 @@ export const Home = () => {
         setItems(data);
     }
   };
+  const navigate = useNavigate();
 
   const searchItems = async () => {
     const data = await fetcher<ItemShort[]>(`/search?name=${name}`, getGetParams()).catch(handleGetError)
@@ -34,12 +35,22 @@ export const Home = () => {
     else fetchItems();
   }, [name]);
 
+  const CategoryListPage = (
+    <div id="MerButtonContainer">
+      <button onClick={() => navigate(`/category/0`)} id="MerButton">all</button>
+      <button onClick={() => navigate(`/category/1`)} id="MerButton">food</button>
+      <button onClick={() => navigate(`/category/2`)} id="MerButton">fashion</button>
+      <button onClick={() => navigate(`/category/3`)} id="MerButton">furniture</button>
+      <button onClick={() => navigate(`/category/4`)} id="MerButton">book</button>
+    </div>
+  );
+
   const itemListPage = (
     <div className="component">
       <ItemList items={items} />
     </div>
   );
 
-  return <>{itemListPage}</>;
+  return <>{CategoryListPage}{itemListPage}</>;
 
 };
