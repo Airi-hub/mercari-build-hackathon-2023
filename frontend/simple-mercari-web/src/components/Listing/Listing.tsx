@@ -32,7 +32,7 @@ export const Listing: React.FC<{ edit?: boolean }> = ({ edit }) => {
   const [cookies] = useCookies(["token", "userID"]);
   //Add the new state here
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setValues(values => ({
 
       ...values,
@@ -147,11 +147,11 @@ export const Listing: React.FC<{ edit?: boolean }> = ({ edit }) => {
       onChange={handleChange}
       required
     />
-    <input
+    <textarea
       className="input"
-      type="text"
       name="description"
       placeholder="description"
+      rows={3}
       value={values.description}
       onChange={handleChange}
       required
