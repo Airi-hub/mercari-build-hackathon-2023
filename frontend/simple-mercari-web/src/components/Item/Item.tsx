@@ -48,10 +48,9 @@ export const Item: React.FC<{ item: ItemShort, edit?:boolean }> = ({ item, edit 
     <div>
       <h3 style={{ fontSize: '25px' }}>{item.name}</h3>
       <img
+        className="w-full sm:w-64 aspect-square object-cover"
         src={itemImage}
         alt={item.name}
-        height={300}
-        width={300}
         onClick={() => navigate(`/${edit ? 'edit' : 'item'}/${item.id}`)}
       />
       <div>

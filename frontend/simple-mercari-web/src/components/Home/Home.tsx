@@ -55,8 +55,8 @@ export const Home = () => {
         </li>)}
       </ul>
     </div>
-    <div className="component">
-      <ItemList items={items} />
+    <div className="component-full min-h-[16rem]">
+      {items && items.length  ? <ItemList items={items} /> : <div className="flex h-full justify-center items-center">No item found</div>}
     </div>
   </div>;
 
